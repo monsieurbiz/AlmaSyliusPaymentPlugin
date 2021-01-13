@@ -1,0 +1,4 @@
+suites:
+    main:
+        namespace: Alma\SyliusPaymentPlugin
+        psr4_prefix: Alma\SyliusPaymentPlugin

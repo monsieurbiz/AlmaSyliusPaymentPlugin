@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults public="false" autoconfigure="false" autowire="false"/>
+
+        <service id="app.alma_payments" class="Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder">
+            <argument>Alma\SyliusPaymentPlugin\Payum\AlmaGatewayFactory</argument>
+            <tag name="payum.gateway_factory_builder" factory="alma_payments" />
+        </service>
+
+        <service id="Alma\SyliusPaymentPlugin\Form\Type\AlmaGatewayConfigurationType">
+            <tag name="sylius.gateway_configuration_type" type="alma_payments" label="Alma Payments" />
+            <tag name="form.type" />
+        </service>
+    </services>
+</container>
