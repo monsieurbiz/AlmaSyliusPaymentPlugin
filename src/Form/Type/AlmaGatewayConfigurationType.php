@@ -14,12 +14,29 @@ final class AlmaGatewayConfigurationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('api_key', TextType::class);
-        $builder->add('api_mode', ChoiceType::class, [
-            'choices' => [
-                'Live' => Client::LIVE_MODE,
-                'Test' => Client::TEST_MODE,
-            ]
-        ]);
+        $builder
+            ->add('api_key', TextType::class)
+            ->add('api_key_test', TextType::class)
+            ->add(
+                'api_mode',
+                ChoiceType::class,
+                [
+                    'choices' => [
+                        'Live' => Client::LIVE_MODE,
+                        'Test' => Client::TEST_MODE,
+                    ]
+                ]
+            )
+            ->add(
+                'api_pnx',
+                ChoiceType::class,
+                [
+                    'choices' => [
+                        'p2x' => 2,
+                        'p3x' => 3,
+                        'p4x' => 4,
+                    ]
+                ]
+            );
     }
 }

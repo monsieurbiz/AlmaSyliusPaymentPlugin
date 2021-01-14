@@ -1,8 +1,11 @@
 {
-    "name": "sylius/plugin-skeleton",
+    "name": "alma/sylius-installment-plugin",
     "type": "sylius-plugin",
-    "keywords": ["sylius", "sylius-plugin"],
-    "description": "Acme example plugin for Sylius.",
+    "keywords": [
+        "sylius",
+        "sylius-plugin"
+    ],
+    "description": "Plugin allowing to pay with Alma",
     "license": "MIT",
     "require": {
         "php": "^7.3",
@@ -42,11 +45,13 @@
     "autoload": {
         "psr-4": {
             "Alma\\SyliusPaymentPlugin\\": "src/",
-            "Tests\\Acme\\SyliusExamplePlugin\\": "tests/"
+            "Tests\\Alma\\SyliusPaymentPlugin\\": "tests/"
         }
     },
     "autoload-dev": {
-        "classmap": ["tests/Application/Kernel.php"]
+        "classmap": [
+            "tests/Application/Kernel.php"
+        ]
     },
     "extra": {
         "branch-alias": {

@@ -8,10 +8,13 @@
             <argument>Alma\SyliusPaymentPlugin\Payum\AlmaGatewayFactory</argument>
             <tag name="payum.gateway_factory_builder" factory="alma_payments" />
         </service>
-
         <service id="Alma\SyliusPaymentPlugin\Form\Type\AlmaGatewayConfigurationType">
             <tag name="sylius.gateway_configuration_type" type="alma_payments" label="Alma Payments" />
             <tag name="form.type" />
         </service>
+        <service id="Alma\SyliusPaymentPlugin\Payum\Action\CaptureAction" public="true">
+            <argument type="service" id="sylius.http_client" />
+            <tag name="payum.action" factory="alma_payments" alias="payum.action.capture" />
+        </service>        
     </services>
 </container>
