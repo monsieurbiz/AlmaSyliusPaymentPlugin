@@ -47,7 +47,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
 
         $this->gateway->execute($renderTemplate = new RenderTemplate($config->getPaymentFormTemplate(), array(
             'details' => $details,
-            'merchantId' => 'realmerchant', // $config->getMerchantId(),
+            'merchantId' => $config->getMerchantId(),
             'apiMode' => $config->getApiMode(),
         )));
 
