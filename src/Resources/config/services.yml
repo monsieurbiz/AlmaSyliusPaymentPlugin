@@ -1,0 +1,45 @@
+services:
+  alma_sylius_payment_plugin.alma_payments:
+    class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
+    arguments:
+      - Alma\SyliusPaymentPlugin\Payum\Gateway\AlmaGatewayFactory
+
+    tags:
+      - name: payum.gateway_factory_builder
+        factory: alma_payments
+
+
+  Alma\SyliusPaymentPlugin\Form\Type\AlmaGatewayConfigurationType:
+    tags:
+      - name: form.type
+      - name: sylius.gateway_configuration_type
+        type: alma_payments
+        label: Alma Payments
+
+  Alma\SyliusPaymentPlugin\Payum\Action\StatusAction:
+    public: true
+    tags:
+      - name: payum.action
+        factory: alma_payments
+        alias: payum.action.status
+
+  Alma\SyliusPaymentPlugin\Payum\Action\ConvertPaymentAction:
+    public: true
+    tags:
+      - name: payum.action
+        factory: alma_payments
+        alias: payum.action.convert_payment
+
+  Alma\SyliusPaymentPlugin\Payum\Action\CaptureAction:
+    public: true
+    tags:
+      - name: payum.action
+        factory: alma_payments
+        alias: payum.action.capture
+
+
+  alma_sylius_payment_plugin.bridge:
+    public: true
+    class: Alma\SyliusPaymentPlugin\Bridge\AlmaBridge
+    arguments:
+      $logger: '@logger'
