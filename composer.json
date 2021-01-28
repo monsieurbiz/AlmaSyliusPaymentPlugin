@@ -10,7 +10,10 @@
     "require": {
         "php": "^7.3",
         "alma/alma-php-client": "^1.0",
-        "sylius/sylius": "^1.8"
+        "sylius/sylius": "1.6.9"
+    },
+    "conflict": {
+        "api-platform/core": ">=2.6.0"
     },
     "require-dev": {
         "behat/behat": "^3.6.1",
@@ -45,6 +48,7 @@
     "autoload": {
         "psr-4": {
             "Alma\\SyliusPaymentPlugin\\": "src/",
+            "Tests\\Alma\\SyliusPaymentPlugin\\App\\": "tests/Application/src/",
             "Tests\\Alma\\SyliusPaymentPlugin\\": "tests/"
         }
     },
