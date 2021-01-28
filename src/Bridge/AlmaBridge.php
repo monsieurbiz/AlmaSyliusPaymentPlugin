@@ -60,8 +60,7 @@ class AlmaBridge implements AlmaBridgeInterface
         try {
             $alma = new Client($apiKey, [
                 'mode' => $mode,
-                'logger' => $logger,
-                'api_root' => 'http://localhost:1337'
+                'logger' => $logger
             ]);
 
             // TODO: add versions

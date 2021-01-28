@@ -4,7 +4,7 @@
 <script>
     ;(function() {
         var paymentData = {{ details.payload | json_encode() | raw }};
-        var fragments = new Alma.Fragments("{{ merchantId }}", { mode: "{{ apiMode }}", apiRoot: "http://localhost:1337" });
+        var fragments = new Alma.Fragments("{{ merchantId }}", { mode: "{{ apiMode }}" });
 
         fragments.createPaymentForm(paymentData).mount('#payment-form');
     })();
