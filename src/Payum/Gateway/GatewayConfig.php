@@ -25,6 +25,11 @@ class GatewayConfig implements GatewayConfigInterface
         return $this->config[self::CONFIG_API_MODE];
     }
 
+    function getMerchantId(): string
+    {
+        return $this->config[self::CONFIG_MERCHANT_ID];
+    }
+
     function getActiveApiKey(): string
     {
         return ($this->getApiMode() == AlmaClient::LIVE_MODE ? $this->getLiveApiKey() : $this->getTestApiKey());
