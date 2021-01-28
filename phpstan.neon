@@ -1,4 +1,5 @@
 parameters:
+    customRulesetUsed: true
     reportUnmatchedIgnoredErrors: false
     checkMissingIterableValueType: false
 
