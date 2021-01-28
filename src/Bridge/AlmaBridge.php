@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Bridge;
 
 
-
 use Alma\API\Client;
+use Alma\API\Entities\Merchant;
+use Alma\API\RequestError;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfig;
 use Exception;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -55,6 +56,7 @@ class AlmaBridge implements AlmaBridgeInterface
 
     public static function createClientInstance(string $apiKey, string $mode, LoggerInterface $logger): ?Client
     {
+        /** @var Client|null $alma */
         $alma = null;
 
         try {
@@ -67,10 +69,29 @@ class AlmaBridge implements AlmaBridgeInterface
             $alma->addUserAgentComponent('Sylius', '0');
             $alma->addUserAgentComponent('Alma for Sylius', '0');
         } catch (Exception $e) {
-            $logger->error('Error creating Alma API client: ' . $e->getMessage());
+            $logger->error('[Alma] Error creating Alma API client: ' . $e->getMessage());
         }
 
         return $alma;
+    }
+
+    function getMerchantInfo(): ?Merchant
+    {
+        $client = $this->getDefaultClient();
+        if (!$client) {
+            return null;
+        }
+
+        /** @var Merchant|null $merchant */
+        $merchant = null;
+
+        try {
+            $merchant = $client->merchants->me();
+        } catch (RequestError $e) {
+            $this->logger->error('[Alma] Error fetching merchant info: ' . $e->getMessage());
+        }
+
+        return $merchant;
     }
 
     /**
