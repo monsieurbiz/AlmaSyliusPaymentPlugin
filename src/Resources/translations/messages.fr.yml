@@ -1,0 +1,19 @@
+alma_sylius_payment_plugin:
+  config:
+    live_api_key_label: Clé d'API Live
+    test_api_key_label: Clé d'API Test
+    find_api_keys_in_dashboard: Vous trouverez vos clés d'API <a href="https://dashboard.getalma.eu/api">sur votre dashboard</a>.
+
+    api_mode_label: Mode de l'API
+    api_mode_tip: Le mode Test permet de finaliser une commande avec une carte bancaire de test, évitez donc son activation en production.
+
+    installments_count_label: Nombre d'échéances
+    installments_count_choice_label: '%installments_count% échéances'
+
+  errors:
+    invalid_api_key: Clé d'API invalide
+    empty_api_key: La clé d'API doit être renseignée
+
+  api:
+    live_mode: Live
+    test_mode: Test

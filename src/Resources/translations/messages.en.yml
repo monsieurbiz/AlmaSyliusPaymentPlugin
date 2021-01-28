@@ -1,0 +1,19 @@
+alma_sylius_payment_plugin:
+  config:
+    live_api_key_label: Live API key
+    test_api_key_label: Test API key
+    find_api_keys_in_dashboard: You can find your API keys <a href="https://dashboard.getalma.eu/api">on your dashboard</a>.
+
+    api_mode_label: API mode
+    api_mode_tip: As the Test mode allows completing an order with a test credit card, you should avoid activating it in production.
+
+    installments_count_label: Installments count
+    installments_count_choice_label: '%installments_count% installments'
+
+  errors:
+    invalid_api_key: API key is invalid
+    empty_api_key: Please provide an API key
+
+  api:
+    live_mode: Live
+    test_mode: Test
