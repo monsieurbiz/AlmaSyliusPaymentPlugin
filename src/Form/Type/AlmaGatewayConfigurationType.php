@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Form\Type;
 
 use Alma\API\Client;
+use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfigInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,10 +16,10 @@ final class AlmaGatewayConfigurationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('api_key', TextType::class)
-            ->add('api_key_test', TextType::class)
+            ->add(GatewayConfigInterface::CONFIG_LIVE_API_KEY, TextType::class)
+            ->add(GatewayConfigInterface::CONFIG_TEST_API_KEY, TextType::class)
             ->add(
-                'api_mode',
+                GatewayConfigInterface::CONFIG_API_MODE,
                 ChoiceType::class,
                 [
                     'choices' => [
@@ -28,13 +29,13 @@ final class AlmaGatewayConfigurationType extends AbstractType
                 ]
             )
             ->add(
-                'api_pnx',
+                GatewayConfigInterface::CONFIG_INSTALLMENTS_COUNT,
                 ChoiceType::class,
                 [
                     'choices' => [
-                        'p2x' => 2,
-                        'p3x' => 3,
-                        'p4x' => 4,
+                        '2 installments' => 2,
+                        '3 installments' => 3,
+                        '4 installments' => 4,
                     ]
                 ]
             );
