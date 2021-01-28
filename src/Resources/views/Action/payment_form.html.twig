@@ -1,0 +1,11 @@
+<div id="payment-form"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@alma/fragments@1.x/dist/alma-fragments.umd.js"></script>
+<script>
+    ;(function() {
+        var paymentData = {{ details.payload | json_encode() | raw }};
+        var fragments = new Alma.Fragments("{{ merchantId }}", { mode: "{{ apiMode }}", apiRoot: "http://localhost:1337" });
+
+        fragments.createPaymentForm(paymentData).mount('#payment-form');
+    })();
+</script>
