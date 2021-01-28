@@ -10,6 +10,10 @@ services:
 
 
   Alma\SyliusPaymentPlugin\Form\Type\AlmaGatewayConfigurationType:
+    arguments:
+      $translator: '@translator'
+      $almaBridge: '@alma_sylius_payment_plugin.bridge'
+      $logger: '@logger'
     tags:
       - name: form.type
       - name: sylius.gateway_configuration_type
