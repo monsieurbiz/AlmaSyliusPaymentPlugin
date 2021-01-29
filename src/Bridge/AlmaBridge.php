@@ -65,9 +65,8 @@ class AlmaBridge implements AlmaBridgeInterface
                 'logger' => $logger
             ]);
 
-            // TODO: add versions
-            $alma->addUserAgentComponent('Sylius', '0');
-            $alma->addUserAgentComponent('Alma for Sylius', '0');
+            $alma->addUserAgentComponent('Sylius', Sylius::VERSION);
+            $alma->addUserAgentComponent('Alma for Sylius', AlmaSyliusPaymentPlugin::VERSION);
         } catch (Exception $e) {
             $logger->error('[Alma] Error creating Alma API client: ' . $e->getMessage());
         }
