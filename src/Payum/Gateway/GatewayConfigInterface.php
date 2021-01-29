@@ -7,6 +7,8 @@ namespace Alma\SyliusPaymentPlugin\Payum\Gateway;
 use Payum\Core\Bridge\Spl\ArrayObject;
 
 interface GatewayConfigInterface {
+    const ALLOWED_CURRENCY_CODES = ['EUR'];
+
     const CONFIG_MERCHANT_ID = 'merchant_id';
     const CONFIG_LIVE_API_KEY = 'live_api_key';
     const CONFIG_TEST_API_KEY = 'test_api_key';

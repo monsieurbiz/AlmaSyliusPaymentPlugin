@@ -11,10 +11,12 @@ use Payum\Core\GatewayFactory;
 
 final class AlmaGatewayFactory extends GatewayFactory
 {
+    const FACTORY_NAME = 'alma_payments';
+
     protected function populateConfig(ArrayObject $config): void
     {
         $config->defaults([
-            'payum.factory_name' => 'alma_payments',
+            'payum.factory_name' => self::FACTORY_NAME,
             'payum.factory_title' => 'Alma Payments',
             GatewayConfigInterface::CONFIG_PAYMENT_FORM_TEMPLATE => '@AlmaSyliusPaymentPlugin/Action/payment_form.html.twig',
         ]);
