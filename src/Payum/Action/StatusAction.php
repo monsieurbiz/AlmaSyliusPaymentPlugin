@@ -80,6 +80,10 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
         /** @var PaymentInterface $payment */
         $payment = $request->getModel();
 
+        if ($payment->getId() !== $almaPayment->custom_data['payment_id']) {
+            return;
+        }
+
         if (
             $almaPayment->purchase_amount === $payment->getAmount() &&
             ($almaPayment->state === Payment::STATE_IN_PROGRESS || $almaPayment->state === Payment::STATE_PAID)

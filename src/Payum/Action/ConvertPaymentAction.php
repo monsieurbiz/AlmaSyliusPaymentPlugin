@@ -44,6 +44,9 @@ final class ConvertPaymentAction implements ActionInterface, ApiAwareInterface
         $paymentData['payment'] = array_merge($paymentData['payment'], [
             'installments_count' => $config->getInstallmentsCount(),
             'return_url' => $request->getToken()->getAfterUrl(),
+            'custom_data' => [
+                'payment_id' => $payment->getId()
+            ]
         ]);
 
         $request->setResult(['payload' => $paymentData]);
