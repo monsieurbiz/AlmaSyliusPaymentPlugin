@@ -108,4 +108,24 @@ final class AlmaBridge implements AlmaBridgeInterface
     {
         return $this->gatewayConfig;
     }
+
+    /**
+     * @inheritDoc
+     */
+    function getEligibilities(PaymentInterface $payment, array $installmentsCounts): array
+    {
+        $paymentData = Payment::fromOrderPayment($payment)->getPayloadData();
+        $paymentData['payment'] = array_merge($paymentData['payment'], [
+            "installments_count" => $installmentsCounts
+        ]);
+
+        $alma = $this->getDefaultClient();
+        try {
+            return $alma->payments->eligibility($paymentData);
+        } catch (RequestError $e) {
+            $this->logger->error("[Alma] Eligibility call failed with error: " . $e->getMessage());
+        }
+
+        return [];
+    }
 }
