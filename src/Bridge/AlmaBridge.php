@@ -8,12 +8,16 @@ namespace Alma\SyliusPaymentPlugin\Bridge;
 use Alma\API\Client;
 use Alma\API\Entities\Merchant;
 use Alma\API\RequestError;
+use Alma\SyliusPaymentPlugin\AlmaSyliusPaymentPlugin;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfig;
+use Alma\SyliusPaymentPlugin\ValueObject\Payment;
 use Exception;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Psr\Log\LoggerInterface;
+use Sylius\Bundle\CoreBundle\Application\Kernel as Sylius;
+use Sylius\Component\Core\Model\PaymentInterface;
 
-class AlmaBridge implements AlmaBridgeInterface
+final class AlmaBridge implements AlmaBridgeInterface
 {
     /**
      * @var GatewayConfig
@@ -25,6 +29,11 @@ class AlmaBridge implements AlmaBridgeInterface
      */
     private $logger;
 
+    /**
+     * @var Client|null
+     */
+    static private $almaClient;
+
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
@@ -32,26 +41,25 @@ class AlmaBridge implements AlmaBridgeInterface
 
     public function initialize(ArrayObject $config): void
     {
+        self::$almaClient = null;
         $this->gatewayConfig = new GatewayConfig($config);
     }
 
     public function getDefaultClient(?string $mode = null): Client
     {
-        static $_almaClient;
-
         if ($mode === null) {
             $mode = $this->gatewayConfig->getApiMode();
         }
 
-        if (!$_almaClient) {
-            $_almaClient = self::createClientInstance(
+        if (!self::$almaClient) {
+            self::$almaClient = self::createClientInstance(
                 $this->gatewayConfig->getActiveApiKey(),
                 $mode,
                 $this->logger
             );
         }
 
-        return $_almaClient;
+        return self::$almaClient;
     }
 
     public static function createClientInstance(string $apiKey, string $mode, LoggerInterface $logger): ?Client
