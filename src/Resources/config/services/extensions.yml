@@ -1,0 +1,10 @@
+services:
+  Alma\SyliusPaymentPlugin\Payum\Extension\RefundFailedPaymentExtension:
+    public: true
+    arguments:
+      $api: '@alma_sylius_payment_plugin.bridge'
+      $logger: '@logger'
+      $session: '@session'
+    tags:
+      - name: payum.extension
+        factory: alma_payments

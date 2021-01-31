@@ -1,0 +1,14 @@
+services:
+  alma_sylius_payment_plugin.data_builders.payment:
+    class: Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilder
+    arguments:
+      $builders: ['@alma_sylius_payment_plugin.data_builders.customer', '@alma_sylius_payment_plugin.data_builders.order', '@alma_sylius_payment_plugin.data_builders.addresses']
+
+  alma_sylius_payment_plugin.data_builders.customer:
+    class: Alma\SyliusPaymentPlugin\DataBuilder\CustomerDataBuilder
+
+  alma_sylius_payment_plugin.data_builders.order:
+    class: Alma\SyliusPaymentPlugin\DataBuilder\OrderDataBuilder
+
+  alma_sylius_payment_plugin.data_builders.addresses:
+    class: Alma\SyliusPaymentPlugin\DataBuilder\AddressesDataBuilder

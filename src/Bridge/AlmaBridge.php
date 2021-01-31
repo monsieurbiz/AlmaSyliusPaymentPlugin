@@ -11,8 +11,8 @@ use Alma\API\Entities\Merchant;
 use Alma\API\Entities\Payment as AlmaPayment;
 use Alma\API\RequestError;
 use Alma\SyliusPaymentPlugin\AlmaSyliusPaymentPlugin;
+use Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilderInterface;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfig;
-use Alma\SyliusPaymentPlugin\ValueObject\Payment;
 use Exception;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Psr\Log\LoggerInterface;
@@ -35,10 +35,15 @@ final class AlmaBridge implements AlmaBridgeInterface
      * @var Client|null
      */
     static private $almaClient;
+    /**
+     * @var PaymentDataBuilderInterface
+     */
+    private $paymentDataBuilder;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, PaymentDataBuilderInterface $paymentDataBuilder)
     {
         $this->logger = $logger;
+        $this->paymentDataBuilder = $paymentDataBuilder;
     }
 
     public function initialize(ArrayObject $config): void
@@ -116,14 +121,18 @@ final class AlmaBridge implements AlmaBridgeInterface
      */
     function getEligibilities(PaymentInterface $payment, array $installmentsCounts): array
     {
-        $paymentData = Payment::fromOrderPayment($payment)->getPayloadData();
-        $paymentData['payment'] = array_merge($paymentData['payment'], [
-            "installments_count" => $installmentsCounts
-        ]);
+        $builder = $this->paymentDataBuilder;
+        $builder->addBuilder(function (array $data, PaymentInterface $payment) use ($installmentsCounts): array {
+            $data['payment'] = array_merge($data['payment'], [
+                "installments_count" => $installmentsCounts
+            ]);
+
+            return $data;
+        });
 
         $alma = $this->getDefaultClient();
         try {
-            return $alma->payments->eligibility($paymentData);
+            return $alma->payments->eligibility($builder([], $payment));
         } catch (RequestError $e) {
             $this->logger->error("[Alma] Eligibility call failed with error: " . $e->getMessage());
         }

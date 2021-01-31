@@ -1,0 +1,10 @@
+services:
+  Alma\SyliusPaymentPlugin\Resolver\AlmaPaymentMethodsResolver:
+    arguments:
+      $paymentMethodRepository: '@sylius.repository.payment_method'
+      $almaBridge: '@alma_sylius_payment_plugin.bridge'
+    tags:
+      - name: sylius.payment_method_resolver
+        type: alma_payments
+        label: sylius.payment_method_resolver.alma_payments
+        priority: 10

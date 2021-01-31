@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Payum\Action;
 
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
+use Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilder;
 use Alma\SyliusPaymentPlugin\ValueObject\Customer;
 use Alma\SyliusPaymentPlugin\ValueObject\Payment;
+use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
@@ -32,10 +34,15 @@ final class ConvertPaymentAction implements ActionInterface, ApiAwareInterface, 
      * @var GenericTokenFactoryInterface
      */
     protected $tokenFactory = null;
+    /**
+     * @var PaymentDataBuilder
+     */
+    private $paymentDataBuilder;
 
-    public function __construct()
+    public function __construct(PaymentDataBuilder $paymentDataBuilder)
     {
         $this->apiClass = AlmaBridge::class;
+        $this->paymentDataBuilder = $paymentDataBuilder;
     }
 
     /**
@@ -53,18 +60,24 @@ final class ConvertPaymentAction implements ActionInterface, ApiAwareInterface, 
         $token = $request->getToken();
         $notifyToken = $this->tokenFactory->createNotifyToken($token->getGatewayName(), $token->getDetails());
 
-        // TODO: add: customer_cancel_url
-        $paymentData = Payment::fromOrderPayment($payment)->getPayloadData();
-        $paymentData['payment'] = array_merge($paymentData['payment'], [
-            'installments_count' => $config->getInstallmentsCount(),
-            'return_url' => $request->getToken()->getAfterUrl(),
-            'ipn_callback_url' => $notifyToken->getTargetUrl(),
-            'custom_data' => [
-                'payment_id' => $payment->getId(),
-            ]
-        ]);
+        $builder = $this->paymentDataBuilder;
+        $builder->addBuilder(
+            function (array $data, PaymentInterface $payment) use ($config, $request, $notifyToken): array {
+                // TODO: add: customer_cancel_url
+                $data['payment'] = array_merge($data['payment'], [
+                    'installments_count' => $config->getInstallmentsCount(),
+                    'return_url' => $request->getToken()->getAfterUrl(),
+                    'ipn_callback_url' => $notifyToken->getTargetUrl(),
+                    'custom_data' => [
+                        'payment_id' => $payment->getId(),
+                    ]
+                ]);
 
-        $request->setResult(['payload' => $paymentData]);
+                return $data;
+            }
+        );
+
+        $request->setResult(['payload' => $builder([], $payment)]);
     }
 
     public function supports($request): bool

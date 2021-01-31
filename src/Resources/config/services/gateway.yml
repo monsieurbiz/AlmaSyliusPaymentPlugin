@@ -1,0 +1,21 @@
+services:
+  alma_sylius_payment_plugin.alma_payments:
+    class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
+    arguments:
+      - Alma\SyliusPaymentPlugin\Payum\Gateway\AlmaGatewayFactory
+
+    tags:
+      - name: payum.gateway_factory_builder
+        factory: alma_payments
+
+
+  Alma\SyliusPaymentPlugin\Form\Type\AlmaGatewayConfigurationType:
+    arguments:
+      $translator: '@translator'
+      $almaBridge: '@alma_sylius_payment_plugin.bridge'
+      $logger: '@logger'
+    tags:
+      - name: form.type
+      - name: sylius.gateway_configuration_type
+        type: alma_payments
+        label: Alma Payments

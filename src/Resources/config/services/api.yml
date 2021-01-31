@@ -1,0 +1,9 @@
+services:
+  alma_sylius_payment_plugin.bridge:
+    public: true
+    class: Alma\SyliusPaymentPlugin\Bridge\AlmaBridge
+    arguments:
+      $logger: '@logger'
+      $paymentDataBuilder: '@alma_sylius_payment_plugin.data_builders.payment'
+
+  Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface: '@alma_sylius_payment_plugin.bridge'
