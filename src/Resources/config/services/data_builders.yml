@@ -2,7 +2,11 @@ services:
   alma_sylius_payment_plugin.data_builders.payment:
     class: Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilder
     arguments:
-      $builders: ['@alma_sylius_payment_plugin.data_builders.customer', '@alma_sylius_payment_plugin.data_builders.order', '@alma_sylius_payment_plugin.data_builders.addresses']
+      $builders:
+        - '@alma_sylius_payment_plugin.data_builders.customer'
+        - '@alma_sylius_payment_plugin.data_builders.order'
+        - '@alma_sylius_payment_plugin.data_builders.addresses'
+        - '@alma_sylius_payment_plugin.data_builders.shipping_info'
 
   alma_sylius_payment_plugin.data_builders.customer:
     class: Alma\SyliusPaymentPlugin\DataBuilder\CustomerDataBuilder
@@ -12,3 +16,9 @@ services:
 
   alma_sylius_payment_plugin.data_builders.addresses:
     class: Alma\SyliusPaymentPlugin\DataBuilder\AddressesDataBuilder
+
+  alma_sylius_payment_plugin.data_builders.shipping_info:
+    class: Alma\SyliusPaymentPlugin\DataBuilder\ShippingInfoDataBuilder
+    arguments:
+      $calculators: '@sylius.registry.shipping_calculator'
+      $methodsResolver: '@sylius.shipping_methods_resolver'
