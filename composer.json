@@ -10,7 +10,8 @@
     "require": {
         "php": "^7.3",
         "alma/alma-php-client": "^1.0",
-        "sylius/sylius": "1.6.9"
+        "sylius/sylius": "1.6.9",
+        "ext-json": "*"
     },
     "conflict": {
         "api-platform/core": ">=2.6.0"

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Payum\Gateway;
 
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
-use Alma\SyliusPaymentPlugin\Payum\Action\StatusAction;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
 

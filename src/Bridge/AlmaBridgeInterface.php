@@ -14,11 +14,16 @@ use Sylius\Component\Core\Model\PaymentInterface;
 
 interface AlmaBridgeInterface
 {
+    const QUERY_PARAM_PID = "pid";
+
+    const DETAILS_KEY_IS_VALID = "is_valid";
+    const DETAILS_KEY_PAYMENT_ID = 'payment_id';
+
     function initialize(ArrayObject $config): void;
 
     function getGatewayConfig(): GatewayConfig;
 
-    function getDefaultClient(string $mode): ?Client;
+    function getDefaultClient(?string $mode = null): ?Client;
     static function createClientInstance(string $apiKey, string $mode, LoggerInterface $logger): ?Client;
 
     function getMerchantInfo(): ?Merchant;
@@ -29,4 +34,6 @@ interface AlmaBridgeInterface
      * @return Eligibility[]
      */
     function getEligibilities(PaymentInterface $payment, array $installmentsCounts): array;
+
+    function validatePayment(PaymentInterface $payment, string $almaPaymentId): bool;
 }
