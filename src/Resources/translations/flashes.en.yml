@@ -1,0 +1,4 @@
+alma_sylius_payment_plugin:
+  payment:
+    failed_refunded: An error occurred. Your Alma payment has been fully refunded. Please try again.
+    failed_not_refunded: 'An error occurred and your Alma payment could not be refunded. Please contact us and provide the following reference: %pid%'

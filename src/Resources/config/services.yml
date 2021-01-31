@@ -54,6 +54,16 @@ services:
         factory: alma_payments
         alias: payum.action.notify
 
+  Alma\SyliusPaymentPlugin\Payum\Extension\RefundFailedPaymentExtension:
+    public: true
+    arguments:
+      $api: '@alma_sylius_payment_plugin.bridge'
+      $logger: '@logger'
+      $session: '@session'
+    tags:
+      - name: payum.extension
+        factory: alma_payments
+
   alma_sylius_payment_plugin.bridge:
     public: true
     class: Alma\SyliusPaymentPlugin\Bridge\AlmaBridge
