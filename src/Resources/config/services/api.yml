@@ -4,6 +4,6 @@ services:
     class: Alma\SyliusPaymentPlugin\Bridge\AlmaBridge
     arguments:
       $logger: '@logger'
-      $paymentDataBuilder: '@alma_sylius_payment_plugin.data_builders.payment'
+      $paymentDataBuilder: '@alma_sylius_payment_plugin.payment_data_builder'
 
   Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface: '@alma_sylius_payment_plugin.bridge'

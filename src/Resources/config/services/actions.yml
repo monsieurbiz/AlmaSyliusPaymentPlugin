@@ -9,7 +9,7 @@ services:
   Alma\SyliusPaymentPlugin\Payum\Action\ConvertPaymentAction:
     public: true
     arguments:
-      $paymentDataBuilder: '@alma_sylius_payment_plugin.data_builders.payment'
+      $paymentDataBuilder: '@alma_sylius_payment_plugin.payment_data_builder'
     tags:
       - name: payum.action
         factory: alma_payments

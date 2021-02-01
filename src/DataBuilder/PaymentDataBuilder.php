@@ -6,20 +6,23 @@ namespace Alma\SyliusPaymentPlugin\DataBuilder;
 
 
 use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\Component\Registry\ServiceRegistryInterface;
 
 class PaymentDataBuilder implements PaymentDataBuilderInterface
 {
     /**
-     * @var DataBuilderInterface[]|array
+     * @var ServiceRegistryInterface
      */
-    private $builders;
+    private $buildersRegistry;
 
     /**
-     * @inheritDoc
+     * @var array<array-key, DataBuilderInterface|callable>
      */
-    public function __construct(array $builders)
+    private $extraBuilders = [];
+
+    public function __construct(ServiceRegistryInterface $buildersRegistry)
     {
-        $this->builders = $builders;
+        $this->buildersRegistry = $buildersRegistry;
     }
 
     /**
@@ -27,17 +30,28 @@ class PaymentDataBuilder implements PaymentDataBuilderInterface
      */
     public function addBuilder($builder): void
     {
-        $this->builders[] = $builder;
+        $this->extraBuilders[] = $builder;
+    }
+
+    /**
+     * @return array<array-key, DataBuilderInterface|callable>
+     */
+    private function getAllBuilders(): array
+    {
+        return array_merge($this->buildersRegistry->all(), $this->extraBuilders);
     }
 
     public function __invoke(array $data, PaymentInterface $payment): array
     {
         $data['payment'] = [
             'purchase_amount' => $payment->getAmount(),
+            'custom_data' => [
+                'payment_id' => $payment->getId()
+            ]
         ];
 
         /** @var DataBuilderInterface $builder */
-        foreach ($this->builders as $builder) {
+        foreach ($this->getAllBuilders() as $builder) {
             $data = $builder($data, $payment);
         }
 

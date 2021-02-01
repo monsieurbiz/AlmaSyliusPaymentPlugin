@@ -1,24 +1,38 @@
 services:
-  alma_sylius_payment_plugin.data_builders.payment:
+  alma_sylius_payment_plugin.registry.payment_data_builder:
+    class: Sylius\Component\Registry\ServiceRegistry
+    arguments:
+      - Alma\SyliusPaymentPlugin\DataBuilder\DataBuilderInterface
+      - payment data builder
+
+  alma_sylius_payment_plugin.payment_data_builder:
     class: Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilder
     arguments:
-      $builders:
-        - '@alma_sylius_payment_plugin.data_builders.customer'
-        - '@alma_sylius_payment_plugin.data_builders.order'
-        - '@alma_sylius_payment_plugin.data_builders.addresses'
-        - '@alma_sylius_payment_plugin.data_builders.shipping_info'
+      $buildersRegistry: '@alma_sylius_payment_plugin.registry.payment_data_builder'
 
-  alma_sylius_payment_plugin.data_builders.customer:
+  alma_sylius_payment_plugin.payment_data_builder.customer:
     class: Alma\SyliusPaymentPlugin\DataBuilder\CustomerDataBuilder
+    tags:
+      - name: alma_sylius_payment_plugin.payment_data_builder
+        id: customer
 
-  alma_sylius_payment_plugin.data_builders.order:
+  alma_sylius_payment_plugin.payment_data_builder.order:
     class: Alma\SyliusPaymentPlugin\DataBuilder\OrderDataBuilder
+    tags:
+      - name: alma_sylius_payment_plugin.payment_data_builder
+        id: order
 
-  alma_sylius_payment_plugin.data_builders.addresses:
+  alma_sylius_payment_plugin.payment_data_builder.addresses:
     class: Alma\SyliusPaymentPlugin\DataBuilder\AddressesDataBuilder
+    tags:
+      - name: alma_sylius_payment_plugin.payment_data_builder
+        id: addresses
 
-  alma_sylius_payment_plugin.data_builders.shipping_info:
+  alma_sylius_payment_plugin.payment_data_builder.shipping_info:
     class: Alma\SyliusPaymentPlugin\DataBuilder\ShippingInfoDataBuilder
     arguments:
       $calculators: '@sylius.registry.shipping_calculator'
       $methodsResolver: '@sylius.shipping_methods_resolver'
+    tags:
+      - name: alma_sylius_payment_plugin.payment_data_builder
+        id: shipping_info

@@ -4,12 +4,11 @@
 namespace Alma\SyliusPaymentPlugin\DataBuilder;
 
 
+use Sylius\Component\Registry\ServiceRegistryInterface;
+
 interface PaymentDataBuilderInterface extends DataBuilderInterface
 {
-    /**
-     * @param DataBuilderInterface[] $builders
-     */
-    public function __construct(array $builders);
+    public function __construct(ServiceRegistryInterface $buildersRegistry);
 
     /**
      * @param DataBuilderInterface|callable $builder
