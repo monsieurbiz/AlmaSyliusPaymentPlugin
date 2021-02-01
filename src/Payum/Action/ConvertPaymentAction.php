@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Payum\Action;
 
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
+use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilder;
 use Alma\SyliusPaymentPlugin\ValueObject\Customer;
 use Alma\SyliusPaymentPlugin\ValueObject\Payment;
@@ -31,7 +32,7 @@ final class ConvertPaymentAction implements ActionInterface, ApiAwareInterface, 
     protected $api;
 
     /**
-     * @var GenericTokenFactoryInterface
+     * @var GenericTokenFactoryInterface|null
      */
     protected $tokenFactory = null;
     /**
@@ -63,21 +64,17 @@ final class ConvertPaymentAction implements ActionInterface, ApiAwareInterface, 
         $builder = $this->paymentDataBuilder;
         $builder->addBuilder(
             function (array $data, PaymentInterface $payment) use ($config, $request, $notifyToken): array {
-                // TODO: add: customer_cancel_url
                 $data['payment'] = array_merge($data['payment'], [
                     'installments_count' => $config->getInstallmentsCount(),
                     'return_url' => $request->getToken()->getAfterUrl(),
                     'ipn_callback_url' => $notifyToken->getTargetUrl(),
-                    'custom_data' => [
-                        'payment_id' => $payment->getId(),
-                    ]
                 ]);
 
                 return $data;
             }
         );
 
-        $request->setResult(['payload' => $builder([], $payment)]);
+        $request->setResult([AlmaBridgeInterface::DETAILS_KEY_PAYLOAD => $builder([], $payment)]);
     }
 
     public function supports($request): bool

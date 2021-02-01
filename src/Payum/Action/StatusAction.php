@@ -50,7 +50,10 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
         $this->gateway->execute($httpRequest);
         $query = ArrayObject::ensureArrayObject($httpRequest->query);
 
-        if (!$details->offsetExists("payload")) {
+        if (
+            !$details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_PAYLOAD)
+            && !$details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)
+        ) {
             $request->markNew();
 
             return;
@@ -63,13 +66,14 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
         }
 
         // Make sure the payment's details include the Alma payment ID
-        $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = (string) $query[AlmaBridgeInterface::QUERY_PARAM_PID];
+        $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = (string)$query[AlmaBridgeInterface::QUERY_PARAM_PID];
         $payment->setDetails($details->getArrayCopy());
 
         // If payment hasn't been validated yet, validate its status against Alma's payment state
-        if (!$details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)
-            && in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true))
-        {
+        if (
+            !$details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)
+            && in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
+        ) {
             $this->gateway->execute(new ValidatePayment($payment));
 
             // Refresh details to get validation status
@@ -82,9 +86,24 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
         // Explicitly compare to true/false, as a null value (i.e. no IS_VALID_KEY in $details) means unknown state
         if ($isValid === true) {
             $request->markCaptured();
+            $this->cleanPayload($payment);
         } elseif ($isValid === false) {
             $request->markFailed();
+            $this->cleanPayload($payment);
         }
+    }
+
+    // Payment's payload will uselessly occupy database space, so clean it once it's been used
+    private function cleanPayload(PaymentInterface $payment): void
+    {
+        $details = ArrayObject::ensureArrayObject($payment->getDetails());
+
+        if (!$details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_PAYLOAD)) {
+            return;
+        }
+
+        $details->offsetUnset(AlmaBridgeInterface::DETAILS_KEY_PAYLOAD);
+        $payment->setDetails($details->getArrayCopy());
     }
 
     public function supports($request): bool

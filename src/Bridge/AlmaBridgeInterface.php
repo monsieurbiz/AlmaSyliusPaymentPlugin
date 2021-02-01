@@ -14,10 +14,11 @@ use Sylius\Component\Core\Model\PaymentInterface;
 
 interface AlmaBridgeInterface
 {
-    const QUERY_PARAM_PID = "pid";
+    const QUERY_PARAM_PID = 'pid';
 
-    const DETAILS_KEY_IS_VALID = "is_valid";
+    const DETAILS_KEY_PAYLOAD = 'payload';
     const DETAILS_KEY_PAYMENT_ID = 'payment_id';
+    const DETAILS_KEY_IS_VALID = 'is_valid';
 
     function initialize(ArrayObject $config): void;
 
