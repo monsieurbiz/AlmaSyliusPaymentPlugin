@@ -14,6 +14,7 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Core\Model\PromotionInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Taxation\Resolver\TaxRateResolverInterface;
 use Sylius\Component\Taxonomy\Model\TaxonTranslationInterface;
@@ -52,7 +53,8 @@ class CartDataBuilder implements DataBuilderInterface
         Assert::notNull($order);
 
         $data['payment']['cart'] = [
-            'items' => $this->getItems($order)
+            'items' => $this->getItems($order),
+            'discounts' => $this->getDiscounts($order)
         ];
 
         return $data;
@@ -178,5 +180,36 @@ class CartDataBuilder implements DataBuilderInterface
         }
 
         return $taxRate->isIncludedInPrice();
+    }
+
+    private function getDiscounts(OrderInterface $order): array
+    {
+        /** @var PromotionInterface[] $promotions */
+        $promotions = Utils::getCollectionValues($order->getPromotions());
+
+        if (count($promotions) === 0) {
+            return [];
+        } elseif (count($promotions) === 1) {
+            return [
+                [
+                    'title' => $promotions[0]->getName(),
+                    'amount' => $order->getOrderPromotionTotal()
+                ]
+            ];
+        }
+
+        $allPromos = array_map(function (PromotionInterface $promotion) {
+            return [
+                'title' => $promotion->getName() . " (montant inconnu)",
+                'amount' => 0
+            ];
+        }, $promotions);
+
+        $allPromos[] = [
+            'title' => 'Total',
+            'amount' => $order->getOrderPromotionTotal()
+        ];
+
+        return $allPromos;
     }
 }
