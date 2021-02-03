@@ -1,112 +1,54 @@
 <p align="center">
-    <a href="https://sylius.com" target="_blank">
-        <img src="https://demo.sylius.com/assets/shop/img/logo.png" />
-    </a>
+    <img src="https://getalma.eu/static/website/new/img/logo.png" alt="logo alma" />
+    <img src="https://demo.sylius.com/assets/shop/img/logo.png" height="75" />
 </p>
 
-<h1 align="center">Plugin Skeleton</h1>
+<h1 align="center">Sylius Alma Payment Plugin</h1>
 
-<p align="center">Skeleton for starting Sylius plugins.</p>
+<p align="center">Integrate Alma installments and pay later payments with your Sylius shop</p>
 
 ## Documentation
 
-For a comprehensive guide on Sylius Plugins development please go to Sylius documentation,
-there you will find the <a href="https://docs.sylius.com/en/latest/plugin-development-guide/index.html">Plugin Development Guide</a>, that is full of examples.
+### Installation
+Use Composer to install the plugin:
 
-## Quickstart Installation
+```
+$ composer require alma/sylius-payment-plugin
+```
 
-1. Run `composer create-project sylius/plugin-skeleton ProjectName`.
+Update your shop's translation catalogs:
 
-2. From the plugin skeleton root directory, run the following commands:
+```
+$ php bin/console translation:update --dump-messages fr AlmaSyliusPaymentPlugin 
+$ php bin/console translation:update --dump-messages en AlmaSyliusPaymentPlugin 
+```
 
-    ```bash
-    $ (cd tests/Application && yarn install)
-    $ (cd tests/Application && yarn build)
-    $ (cd tests/Application && APP_ENV=test bin/console assets:install public)
-    
-    $ (cd tests/Application && APP_ENV=test bin/console doctrine:database:create)
-    $ (cd tests/Application && APP_ENV=test bin/console doctrine:schema:create)
-    ```
+Finally, clear your cache:
 
-To be able to setup a plugin's database, remember to configure you database credentials in `tests/Application/.env` and `tests/Application/.env.test`.
+```
+$ php bin/console cache:clear
+```
 
-## Usage
+### Requirements
+Alma currently accepts Euros only; make sure you activate your payment method on channels that use that currency, else 
+you won't see it at checkout.
 
-### Running plugin tests
+Your Alma payment methods will only show for eligible carts. Eligibility is mainly based on the purchased amount, which
+by default should be between 100€ and 2000€; if you want those limits changed, you can talk to your sales representative
+at Alma, or contact [support@getalma.eu](mailto:support@getalma.eu).
 
-  - PHPUnit
+### Usage
+1. Go to the Payment Methods admin page and choose to create a new "Alma Payments" method
 
-    ```bash
-    vendor/bin/phpunit
-    ```
+2. Grab your API keys [from your dashboard](https://dashboard.getalma.eu/api) and paste them into the appropriate fields
 
-  - PHPSpec
+3. Choose the installments count to apply for this payment method. If you want to offer multiple installments counts to 
+   your customers, you can create one Alma payment method per installments count.
 
-    ```bash
-    vendor/bin/phpspec run
-    ```
+4. Set the API mode to Test if you want to first test the integration with a fake credit card, on your preproduction 
+   servers for instance.  
+   When you're ready for production, set the API mode to Live.
 
-  - Behat (non-JS scenarios)
+5. Choose a name for your method in the languages relevant to your shop.
 
-    ```bash
-    vendor/bin/behat --strict --tags="~@javascript"
-    ```
-
-  - Behat (JS scenarios)
- 
-    1. [Install Symfony CLI command](https://symfony.com/download).
- 
-    2. Start Headless Chrome:
-    
-      ```bash
-      google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1
-      ```
-    
-    3. Install SSL certificates (only once needed) and run test application's webserver on `127.0.0.1:8080`:
-    
-      ```bash
-      symfony server:ca:install
-      APP_ENV=test symfony server:start --port=8080 --dir=tests/Application/public --daemon
-      ```
-    
-    4. Run Behat:
-    
-      ```bash
-      vendor/bin/behat --strict --tags="@javascript"
-      ```
-    
-  - Static Analysis
-  
-    - Psalm
-    
-      ```bash
-      vendor/bin/psalm
-      ```
-      
-    - PHPStan
-    
-      ```bash
-      vendor/bin/phpstan analyse -c phpstan.neon -l max src/  
-      ```
-
-  - Coding Standard
-  
-    ```bash
-    vendor/bin/ecs check src
-    ```
-
-### Opening Sylius with your plugin
-
-- Using `test` environment:
-
-    ```bash
-    (cd tests/Application && APP_ENV=test bin/console sylius:fixtures:load)
-    (cd tests/Application && APP_ENV=test bin/console server:run -d public)
-    ```
-    
-- Using `dev` environment:
-
-    ```bash
-    (cd tests/Application && APP_ENV=dev bin/console sylius:fixtures:load)
-    (cd tests/Application && APP_ENV=dev bin/console server:run -d public)
-    ```
+6. You're done! Save the payment method to start accepting instalments payments on your shop!
