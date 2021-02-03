@@ -8,7 +8,7 @@
     "description": "Plugin allowing to pay with Alma",
     "license": "MIT",
     "require": {
-        "php": "^7.3",
+        "php": "^7.1",
         "alma/alma-php-client": "^1.0",
         "sylius/sylius": "1.6.9",
         "ext-json": "*"
