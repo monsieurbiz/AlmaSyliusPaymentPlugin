@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\DataBuilder;
 
 
+use Alma\SyliusPaymentPlugin\Utils\Utils;
 use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\ShipmentInterface;
@@ -12,6 +13,7 @@ use Sylius\Component\Core\Model\ShippingMethodInterface;
 use Sylius\Component\Registry\ServiceRegistryInterface;
 use Sylius\Component\Shipping\Calculator\CalculatorInterface;
 use Sylius\Component\Shipping\Model\ShippingMethodInterface as BaseShippingMethodInterface;
+use Sylius\Component\Shipping\Model\ShippingMethodTranslationInterface;
 use Sylius\Component\Shipping\Resolver\ShippingMethodsResolverInterface;
 use Webmozart\Assert\Assert;
 
@@ -98,18 +100,16 @@ class ShippingInfoDataBuilder implements DataBuilderInterface
 
     private function buildShippingOption(ShipmentInterface $shipment, BaseShippingMethodInterface $method): array
     {
-        $nameProvider = $method->getTranslation();
-        if (array_key_exists('fr', $method->getTranslations())) {
-            $nameProvider = $method->getTranslation('fr');
-        }
+        /** @var ShippingMethodTranslationInterface $methodTranslation */
+        $methodTranslation = Utils::getTranslationImpl($method);
 
         /** @var CalculatorInterface $calculator */
         $calculator = $this->calculators->get($method->getCalculator());
 
         return [
             'amount' => $calculator->calculate($shipment, $method->getConfiguration()),
-            'title' => $nameProvider->getDescription(),
-            'carrier' => $nameProvider->getName()
+            'title' => $methodTranslation->getDescription(),
+            'carrier' => $methodTranslation->getName()
         ];
     }
 }
