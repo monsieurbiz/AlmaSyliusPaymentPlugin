@@ -40,14 +40,14 @@ class CustomerDataBuilder implements DataBuilderInterface
 
         $sources = [$customer, $user, $billingAddress, $shippingAddress];
         $fields = [
-            'firstName' => 'getFirstName',
-            'lastName' => 'getLastName',
+            'first_name' => 'getFirstName',
+            'last_name' => 'getLastName',
             'email' => 'getEmail',
             'phone' => 'getPhoneNumber'
         ];
 
         /** @var CustomerData $result */
-        $result = ['firstName' => null, 'lastName' => null, 'email' => null, 'phone' => null];
+        $result = ['first_name' => null, 'last_name' => null, 'email' => null, 'phone' => null];
 
         foreach ($fields as $field => $getter) {
             foreach ($sources as $source) {
