@@ -108,8 +108,8 @@ class ShippingInfoDataBuilder implements DataBuilderInterface
 
         return [
             'amount' => $calculator->calculate($shipment, $method->getConfiguration()),
-            'title' => $methodTranslation->getDescription(),
-            'carrier' => $methodTranslation->getName()
+            'title' => $methodTranslation->getName(),
+            'carrier' => $methodTranslation->getDescription()
         ];
     }
 }
