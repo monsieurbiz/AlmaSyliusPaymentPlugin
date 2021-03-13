@@ -132,7 +132,7 @@ final class AlmaBridge implements AlmaBridgeInterface
 
         $alma = $this->getDefaultClient();
         try {
-            return $alma->payments->eligibility($builder([], $payment));
+            return $alma->payments->eligibility($builder([], $payment), true);
         } catch (RequestError $e) {
             $this->logger->error("[Alma] Eligibility call failed with error: " . $e->getMessage());
         }

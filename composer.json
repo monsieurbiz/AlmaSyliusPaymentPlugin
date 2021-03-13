@@ -14,7 +14,7 @@
   "license": "MIT",
   "require": {
     "php": "^7.1",
-    "alma/alma-php-client": "^1.0",
+    "alma/alma-php-client": "^1.1",
     "sylius/sylius": "^1.6.9",
     "ext-json": "*"
   },
