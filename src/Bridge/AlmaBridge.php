@@ -8,6 +8,7 @@ namespace Alma\SyliusPaymentPlugin\Bridge;
 use Alma\API\Client;
 use Alma\API\Entities\Instalment;
 use Alma\API\Entities\Merchant;
+use Alma\API\Entities\Payment;
 use Alma\API\Entities\Payment as AlmaPayment;
 use Alma\API\RequestError;
 use Alma\SyliusPaymentPlugin\AlmaSyliusPaymentPlugin;
@@ -141,24 +142,24 @@ final class AlmaBridge implements AlmaBridgeInterface
     }
 
     /**
-     * @param PaymentInterface $payment
-     * @param string $almaPaymentId
-     * @return bool
-     * @throws RequestError
+     *  @inheritDoc
      */
-    public function validatePayment(PaymentInterface $payment, string $almaPaymentId): bool
-    {
+    public function validatePayment(
+        PaymentInterface $payment,
+        string $almaPaymentId,
+        Payment &$paymentData = null
+    ): bool {
         /** @var int $pid */
         $pid = $payment->getId();
 
         try {
-            $almaPayment = $this->getDefaultClient()->payments->fetch($almaPaymentId);
+            $paymentData = $this->getDefaultClient()->payments->fetch($almaPaymentId);
         } catch (RequestError $e) {
             $this->logger->error("[Alma] Could not fetch payment $almaPaymentId to validate payment $pid");
             throw $e;
         }
 
-        if ($pid !== $almaPayment->custom_data['payment_id']) {
+        if ($pid !== $paymentData->custom_data['payment_id']) {
             $error = "Attempt to validate payment $pid with Alma payment $almaPaymentId";
             $this->logger->error("[Alma] $error");
 
@@ -167,10 +168,10 @@ final class AlmaBridge implements AlmaBridgeInterface
 
         return
             // Check that paid amount matches due amount
-            $almaPayment->purchase_amount === $payment->getAmount()
+            $paymentData->purchase_amount === $payment->getAmount()
             // Check that payment is either correctly initiated, or fully paid (p1x fallback)
-            && in_array($almaPayment->state, [AlmaPayment::STATE_IN_PROGRESS, AlmaPayment::STATE_PAID], true)
+            && in_array($paymentData->state, [AlmaPayment::STATE_IN_PROGRESS, AlmaPayment::STATE_PAID], true)
             // Extra-check that first installment has indeed been paid
-            && $almaPayment->payment_plan[0]->state === Instalment::STATE_PAID;
+            && $paymentData->payment_plan[0]->state === Instalment::STATE_PAID;
     }
 }
