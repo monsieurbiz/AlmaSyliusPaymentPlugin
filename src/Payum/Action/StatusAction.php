@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Payum\Action;
 
+use Alma\API\RequestError;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\Payum\Request\ValidatePayment;
@@ -74,7 +75,13 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
             !$details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)
             && in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
         ) {
-            $this->gateway->execute(new ValidatePayment($payment));
+            try {
+                $this->gateway->execute(new ValidatePayment($payment));
+            } catch (RequestError $e) {
+                $details = ArrayObject::ensureArrayObject($payment->getDetails());
+                $details[AlmaBridgeInterface::DETAILS_KEY_IS_VALID] = false;
+                $payment->setDetails($details->getArrayCopy());
+            }
 
             // Refresh details to get validation status
             $details = ArrayObject::ensureArrayObject($payment->getDetails());

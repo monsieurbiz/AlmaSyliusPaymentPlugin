@@ -7,11 +7,12 @@ namespace Alma\SyliusPaymentPlugin\Payum\Extension;
 
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
-use Alma\SyliusPaymentPlugin\Payum\Request\ValidatePayment;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Extension\Context;
 use Payum\Core\Extension\ExtensionInterface;
+use Payum\Core\Request\GetStatusInterface;
 use Psr\Log\LoggerInterface;
+use Sylius\Component\Core\Model\PaymentInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -48,6 +49,15 @@ class RefundFailedPaymentExtension implements ExtensionInterface
     {
         /** @var FlashBagInterface $flashBag */
         $flashBag = $this->session->getBag('flashes');
+
+        // Avoid duplicate flashes
+        /** @var array|string $flash */
+        foreach ($flashBag->peek($type) as $flash) {
+            if (is_array($flash) && array_key_exists('message', $flash) && $flash['message'] === $message) {
+                return;
+            }
+        }
+
         $flashBag->add($type, ['message' => $message, 'parameters' => $params]);
     }
 
@@ -58,14 +68,21 @@ class RefundFailedPaymentExtension implements ExtensionInterface
     {
         $request = $context->getRequest();
 
-        if ($request instanceof ValidatePayment === false) {
+        if ($request instanceof GetStatusInterface === false) {
             return;
         }
 
+        /** @var PaymentInterface $payment */
         $payment = $request->getModel();
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
 
-        if ($details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID) !== false) {
+        // Only check new/processing payments that have a `false` is_valid value (exact value; null/non-existing value
+        // should return) in their details data and hasn't been already refunded because of a validation error
+        if (
+            !in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true) ||
+            $details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID) !== false ||
+            $details->get(AlmaBridgeInterface::DETAILS_KEY_ERROR_TRIGGERED_REFUND) === true
+        ) {
             return;
         }
 
@@ -73,13 +90,16 @@ class RefundFailedPaymentExtension implements ExtensionInterface
         $pid = $payment->getId();
 
         /** @var string $almaPid */
-        $almaPid = $payment->getDetails()[AlmaBridge::DETAILS_KEY_PAYMENT_ID];
+        $almaPid = $details[AlmaBridge::DETAILS_KEY_PAYMENT_ID];
 
         $alma = $this->api->getDefaultClient();
 
         try {
             $alma->payments->refund($almaPid);
             $this->addFlash('info', 'alma_sylius_payment_plugin.payment.failed_refunded');
+
+            $details[AlmaBridgeInterface::DETAILS_KEY_ERROR_TRIGGERED_REFUND] = true;
+            $payment->setDetails($details->getArrayCopy());
         } catch (\Exception $e) {
             $this->logger->error("[Alma] Refund error for failed Payment $pid (Alma: $almaPid): " . $e->getMessage());
 

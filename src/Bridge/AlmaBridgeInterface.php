@@ -22,6 +22,7 @@ interface AlmaBridgeInterface
     const DETAILS_KEY_PAYMENT_ID = 'payment_id';
     const DETAILS_KEY_PAYMENT_DATA = 'payment_data';
     const DETAILS_KEY_IS_VALID = 'is_valid';
+    const DETAILS_KEY_ERROR_TRIGGERED_REFUND = 'error_triggered_refund';
 
     function initialize(ArrayObject $config): void;
 
