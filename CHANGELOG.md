@@ -1,3 +1,9 @@
+v1.0.2
+------
+
+- Better handling of errors that might happen during payment validation and eligibility calls
+- Store Alma's payment data into Sylius' payment details column under the `payment_data` key
+
 v1.0.1
 ------
 
