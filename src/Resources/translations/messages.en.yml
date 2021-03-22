@@ -10,6 +10,10 @@ alma_sylius_payment_plugin:
     installments_count_label: Installments count
     installments_count_choice_label: '%installments_count% installments'
 
+    payment_page_mode_label: Payment page mode
+    payment_page_mode_in_page: Iframe
+    payment_page_mode_redirect: Redirect to Alma
+
   errors:
     invalid_api_key: API key is invalid
     empty_api_key: Please provide an API key
