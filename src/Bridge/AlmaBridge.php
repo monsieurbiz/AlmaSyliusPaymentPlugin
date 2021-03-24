@@ -142,7 +142,7 @@ final class AlmaBridge implements AlmaBridgeInterface
     }
 
     /**
-     *  @inheritDoc
+     * @inheritDoc
      */
     public function validatePayment(
         PaymentInterface $payment,
