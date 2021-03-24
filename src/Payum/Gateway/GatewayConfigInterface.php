@@ -33,4 +33,6 @@ interface GatewayConfigInterface {
     function getInstallmentsCount(): int;
 
     function getPaymentFormTemplate(): string;
+
+    function getPaymentPageMode(): string;
 }

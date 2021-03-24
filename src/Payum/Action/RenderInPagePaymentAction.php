@@ -7,7 +7,6 @@ namespace Alma\SyliusPaymentPlugin\Payum\Action;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfigInterface;
-use Alma\SyliusPaymentPlugin\Payum\Request\RedirectToPaymentPage;
 use Alma\SyliusPaymentPlugin\Payum\Request\RenderInPagePayment;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
@@ -16,10 +15,10 @@ use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Request\Capture;
-use RuntimeException;
+use Payum\Core\Reply\HttpResponse;
+use Payum\Core\Request\RenderTemplate;
 
-final class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
+final class RenderInPagePaymentAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
     use ApiAwareTrait;
@@ -35,35 +34,31 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
     }
 
     /**
-     * @param Capture $request
+     * @param RenderInPagePayment $request
      */
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
+        $details = ArrayObject::ensureArrayObject($request->getModel());
         $config = $this->api->getGatewayConfig();
 
-        $paymentPageMode = $config->getPaymentPageMode();
-        switch ($paymentPageMode) {
-            case GatewayConfigInterface::PAYMENT_PAGE_MODE_IN_PAGE:
-                $this->gateway->execute(new RenderInPagePayment($request->getModel()));
-                break;
+        $this->gateway->execute($renderTemplate = new RenderTemplate(
+            $config->getPaymentFormTemplate(),
+            [
+                'payload' => $details[AlmaBridgeInterface::DETAILS_KEY_PAYLOAD],
+                'merchantId' => $config->getMerchantId(),
+                'apiMode' => $config->getApiMode(),
+            ]
+        ));
 
-            case GatewayConfigInterface::PAYMENT_PAGE_MODE_REDIRECT:
-                $this->gateway->execute(new RedirectToPaymentPage($request));
-                break;
-
-            default:
-                throw new RuntimeException(
-                    "[Alma] Unknown payment page mode '${paymentPageMode}'. Check gateway config"
-                );
-        }
+        throw new HttpResponse($renderTemplate->getResult());
     }
 
     public function supports($request): bool
     {
         return
-            $request instanceof Capture &&
+            $request instanceof RenderInPagePayment &&
             $request->getModel() instanceof ArrayObject;
     }
 }

@@ -2,3 +2,4 @@ alma_sylius_payment_plugin:
   payment:
     failed_refunded: Une erreur est survenue. Votre paiement Alma a été remboursé intégralement. Veuillez réessayer.
     failed_not_refunded:  "Une erreur est survenue et votre paiement Alma n'a pu être remboursé. Merci de nous contacter en fournissant cette référence : %pid%"
+    creation_failed: Une erreur est survenue pendant l'initialisation de votre paiement. Veuillez réessayer ou choisir un autre moyen de paiement.
