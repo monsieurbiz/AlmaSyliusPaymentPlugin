@@ -1,3 +1,11 @@
+# Changelog
+
+v1.1.0
+------
+
+- Add a new gateway option: payment page mode allows merchant to choose between in-page payment form rendering (default)
+  and redirect to Alma's payment page
+
 v1.0.2
 ------
 

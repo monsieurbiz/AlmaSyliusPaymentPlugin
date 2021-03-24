@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 final class AlmaSyliusPaymentPlugin extends Bundle
 {
-    const VERSION = "1.0.2";
+    const VERSION = "1.1.0";
 
     use SyliusPluginTrait;
 
