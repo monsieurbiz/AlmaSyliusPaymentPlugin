@@ -169,6 +169,8 @@ final class AlmaBridge implements AlmaBridgeInterface
         return
             // Check that paid amount matches due amount
             $paymentData->purchase_amount === $payment->getAmount()
+            // Check that payment is not expired
+            && $paymentData->expired_at === null
             // Check that payment is either correctly initiated, or fully paid (p1x fallback)
             && in_array($paymentData->state, [AlmaPayment::STATE_IN_PROGRESS, AlmaPayment::STATE_PAID], true)
             // Extra-check that first installment has indeed been paid
