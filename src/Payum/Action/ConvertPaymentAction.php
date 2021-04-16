@@ -68,6 +68,7 @@ final class ConvertPaymentAction implements ActionInterface, ApiAwareInterface, 
                     'installments_count' => $config->getInstallmentsCount(),
                     'return_url' => $request->getToken()->getAfterUrl(),
                     'ipn_callback_url' => $notifyToken->getTargetUrl(),
+                    'customer_cancel_url' => $request->getToken()->getAfterUrl()
                 ]);
 
                 return $data;

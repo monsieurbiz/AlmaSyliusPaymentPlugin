@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Payum\Action;
 
 
+use Alma\API\Entities\Payment;
 use Alma\API\RequestError;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
@@ -40,6 +41,7 @@ final class ValidatePaymentAction implements ActionInterface, ApiAwareInterface
         $payment = $request->getModel();
         $details = $payment->getDetails();
 
+        /** @var Payment $paymentData */
         $paymentData = null;
         $details[AlmaBridgeInterface::DETAILS_KEY_IS_VALID] = $this->api->validatePayment(
             $payment,

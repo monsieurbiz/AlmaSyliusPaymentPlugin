@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Payum\Extension;
 
 
+use Alma\API\Entities\Payment;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -76,12 +77,22 @@ class RefundFailedPaymentExtension implements ExtensionInterface
         $payment = $request->getModel();
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
 
+        /** @var Payment|array|null $paymentData */
+        $paymentData = $details->get(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_DATA);
+        if (is_array($paymentData)) {
+            $paymentData = new Payment($paymentData);
+        }
+
         // Only check new/processing payments that have a `false` is_valid value (exact value; null/non-existing value
-        // should return) in their details data and hasn't been already refunded because of a validation error
+        // should return) in their details data, that haven't been already refunded because of a validation error and
+        // of which associated Alma payment is in paid/ongoing state (otherwise it means it's been cancelled/expired,
+        // or it's long past validation time and this could be a fraudulent refund attempt)
         if (
-            !in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true) ||
-            $details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID) !== false ||
-            $details->get(AlmaBridgeInterface::DETAILS_KEY_ERROR_TRIGGERED_REFUND) === true
+            !in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
+            || $details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID) !== false
+            || $details->get(AlmaBridgeInterface::DETAILS_KEY_ERROR_TRIGGERED_REFUND) === true
+            || ($paymentData !== null
+                && !in_array($paymentData->state, [Payment::STATE_PAID, Payment::STATE_IN_PROGRESS], true))
         ) {
             return;
         }
