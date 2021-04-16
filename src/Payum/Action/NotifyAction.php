@@ -51,7 +51,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         }
 
         // Make sure the payment's details include the Alma payment ID
-        $details = ArrayObject::ensureArrayObject($payment->getDetails());
+        $details = ArrayObject::ensureArrayObject($request->getModel());
         $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = (string) $query[AlmaBridgeInterface::QUERY_PARAM_PID];
         $payment->setDetails($details->getArrayCopy());
 
@@ -72,6 +72,12 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
                 );
             }
         }
+
+        // $details is the request's model here, but we used a copy above passed down the ValidatePaymentAction through
+        // the $payment object, which is the model of our own request.
+        // Since Payum will use whatever is in the original details model to overwrite the payment's details data, we
+        // need to make sure we copy everything that was set on the payment itself back to the NotifyRequest model.
+        $details->replace($payment->getDetails());
 
         // Down here means the callback has been correctly handled, regardless of the final payment state
         throw new HttpResponse(
