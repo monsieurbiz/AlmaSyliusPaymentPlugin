@@ -1,5 +1,12 @@
 # Changelog
 
+v1.2.0
+------
+
+- Add customer_cancel_url to payment data so that a cancel link shows in Alma's payment page when using the gateway as
+  a redirect payment method
+- Add support for payment expiration IPN
+
 v1.1.0
 ------
 
