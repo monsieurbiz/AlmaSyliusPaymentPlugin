@@ -13,9 +13,9 @@
   "description": "Payment plugin to integrate Alma installments and pay later payments with your Sylius shop",
   "license": "MIT",
   "require": {
-    "php": "^7.1",
-    "alma/alma-php-client": "^1.1",
-    "sylius/sylius": "^1.6.9",
+    "php": ">=7.1",
+    "alma/alma-php-client": "^1.9.1",
+    "sylius/sylius": ">=1.6.9",
     "ext-json": "*"
   },
   "require-dev": {
