@@ -1,5 +1,11 @@
 # Changelog
 
+v1.3.0
+------
+
+- Support PHP 7.1 and later (tested up to 8.1.12)
+- Support Sylius 1.6.9 and later (tested up to 1.11.10)
+
 v1.2.0
 ------
 
