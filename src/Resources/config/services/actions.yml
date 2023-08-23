@@ -32,7 +32,7 @@ services:
     public: true
     arguments:
       $logger: '@logger'
-      $session: '@session'
+      $requestStack: '@request_stack'
     tags:
       - name: payum.action
         factory: alma_payments
