@@ -4,7 +4,7 @@ services:
     arguments:
       $api: '@alma_sylius_payment_plugin.bridge'
       $logger: '@logger'
-      $session: '@session'
+      $requestStack: '@request_stack'
     tags:
       - name: payum.extension
         factory: alma_payments

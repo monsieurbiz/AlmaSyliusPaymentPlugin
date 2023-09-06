@@ -14,8 +14,8 @@ use Payum\Core\Extension\ExtensionInterface;
 use Payum\Core\Request\GetStatusInterface;
 use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  *  A Payum extension to make sure all payment validation failures lead to a full refund of the payment, so that the
@@ -32,18 +32,18 @@ class RefundFailedPaymentExtension implements ExtensionInterface
     private $logger;
 
     /**
-     * @var SessionInterface
+     * @var RequestStack
      */
-    private $session;
+    private $requestStack;
 
     public function __construct(
         AlmaBridgeInterface $api,
         LoggerInterface $logger,
-        SessionInterface $session
+        RequestStack $requestStack
     ) {
         $this->api = $api;
         $this->logger = $logger;
-        $this->session = $session;
+        $this->session = $requestStack->getMainRequest()->getSession();
     }
 
     private function addFlash(string $type, string $message, ?array $params = []): void
