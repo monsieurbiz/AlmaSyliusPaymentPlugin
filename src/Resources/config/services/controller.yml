@@ -1,0 +1,4 @@
+services:
+  Alma\SyliusPaymentPlugin\Controller\installmentPlanController:
+    arguments:
+      $twig: '@alma_sylius_payment_plugin.twig'

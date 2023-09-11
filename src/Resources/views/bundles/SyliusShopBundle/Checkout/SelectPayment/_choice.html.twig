@@ -12,9 +12,10 @@
                 <p>{{ method.description }} toto</p>
             </div>
         {% endif %}
+        method.gatewayConfig.factoryName =
         {{ dump(method.gatewayConfig.factoryName) }}
         {% if method.gatewayConfig.factoryName == 'sylius.pay_pal' %}
-            {{ render(controller('Sylius\\PayPalPlugin\\Controller\\PayPalButtonsController:renderPaymentPageButtonsAction', {'orderId': order.id})) }}
+            {{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentPlanController:renderPaymentPageInstallmentPlanAction', {'orderId': order.id})) }}
         {% endif %}
     </div>
 </div>

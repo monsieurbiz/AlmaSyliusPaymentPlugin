@@ -7,7 +7,6 @@ sylius_shop_checkout_select_payment:
             event: payment
             flash: false
             template: "@SyliusShop/Checkout/selectPayment.html.twig"
-            form: Alma\SyliusPaymentPlugin\Form\Type\SelectPaymentType
             repository:
                 method: findCartForSelectingPayment
                 arguments:

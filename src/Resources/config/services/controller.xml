@@ -3,7 +3,7 @@
     <services>
         <defaults public="true"/>
 
-        <service id="Alma\SyliusPaymentPlugin\Controller\PayPalButtonsController">
+        <service id="Alma\SyliusPaymentPlugin\Controller\installmentPlanController">
             <argument type="service" id="twig" />
             <argument type="service" id="router" />
             <argument type="service" id="sylius.context.channel" />
