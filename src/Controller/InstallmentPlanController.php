@@ -9,9 +9,9 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
-use Sylius\PayPalPlugin\Processor\LocaleProcessorInterface;
-use Sylius\PayPalPlugin\Provider\AvailableCountriesProviderInterface;
-use Sylius\PayPalPlugin\Provider\PayPalConfigurationProviderInterface;
+//use Sylius\PayPalPlugin\Processor\LocaleProcessorInterface;
+//use Sylius\PayPalPlugin\Provider\AvailableCountriesProviderInterface;
+//use Sylius\PayPalPlugin\Provider\PayPalConfigurationProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -19,36 +19,57 @@ use Twig\Environment;
 
 final class InstallmentPlanController
 {
-    private Environment $twig;
+    /**
+     * @var Environment
+     */
+    private  $twig;
 
-    private UrlGeneratorInterface $router;
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private  $router;
 
-    private ChannelContextInterface $channelContext;
+    /**
+     * @var ChannelContextInterface
+     */
+    private  $channelContext;
 
-    private LocaleContextInterface $localeContext;
+    /**
+     * @var LocaleContextInterface
+     */
+    private $localeContext;
 
-    private OrderRepositoryInterface $orderRepository;
+    /**
+     * @var OrderRepositoryInterface
+     */
+    private  $orderRepository;
 
-    private AvailableCountriesProviderInterface $availableCountriesProvider;
+    /**
+     * @var AvailableCountriesProviderInterface
+     */
+    private  $availableCountriesProvider;
 
-    private LocaleProcessorInterface $localeProcessor;
+    /**
+     * @var LocaleProcessorInterface
+     */
+    private  $localeProcessor;
 
     public function __construct(
         Environment $twig,
         UrlGeneratorInterface $router,
         ChannelContextInterface $channelContext,
         LocaleContextInterface $localeContext,
-        OrderRepositoryInterface $orderRepository,
-        AvailableCountriesProviderInterface $availableCountriesProvider,
-        LocaleProcessorInterface $localeProcessor
+        OrderRepositoryInterface $orderRepository
+       // , AvailableCountriesProviderInterface $availableCountriesProvider,
+       // LocaleProcessorInterface $localeProcessor
     ) {
         $this->twig = $twig;
         $this->router = $router;
         $this->channelContext = $channelContext;
         $this->localeContext = $localeContext;
         $this->orderRepository = $orderRepository;
-        $this->availableCountriesProvider = $availableCountriesProvider;
-        $this->localeProcessor = $localeProcessor;
+      //  $this->availableCountriesProvider = $availableCountriesProvider;
+    //    $this->localeProcessor = $localeProcessor;
     }
 
     public function renderPaymentPageInstallmentPlanAction(Request $request): Response

@@ -8,9 +8,13 @@
         <a class="header">{{ form_label(form, null, {'label_attr': {'data-test-payment-method-label': ''}}) }}</a>
         {% if method.description is not null %}
             <div class="description">
-                <p>{{ method.description }} toto</p>
+                <p>{{ method.description }}</p>
             </div>
+        {% endif %}
+        {% if method.gatewayConfig.factoryName == 'alma_payments' %}
+         [   {{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentPlanController:renderPaymentPageInstallmentPlanAction', {'orderId': order.id})) }}
         {% endif %}
         dfsfsdfdsdsffds
     </div>
 </div>
+

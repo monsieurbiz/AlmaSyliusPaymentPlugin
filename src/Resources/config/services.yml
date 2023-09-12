@@ -6,4 +6,5 @@ imports:
   - services/resolvers.yml
   - services/data_builders.yml
   - services/forms.yml
+  - services/controllers.yml
 
