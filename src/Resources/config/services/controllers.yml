@@ -8,4 +8,5 @@ services:
     public: true
     arguments:
       $twig: '@twig'
+      $orderRepository: '@sylius.repository.order'
     tags: [ 'controller.service_arguments' ]
