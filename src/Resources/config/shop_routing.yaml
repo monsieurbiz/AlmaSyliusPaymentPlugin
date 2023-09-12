@@ -15,3 +15,9 @@ sylius_shop_checkout_select_payment:
             state_machine:
                 graph: sylius_order_checkout
                 transition: select_payment
+
+alma_sylius_payment_plugin_render_plans:
+    path: /alma-render-plans
+    methods: [GET]
+    defaults:
+        _controller: alma_sylius_payment_plugin.controller.installments::renderInstallmentPlanAction

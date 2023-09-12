@@ -12,9 +12,10 @@
             </div>
         {% endif %}
         {% if method.gatewayConfig.factoryName == 'alma_payments' %}
-         [   {{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentPlanController:renderPaymentPageInstallmentPlanAction', {'orderId': order.id})) }}
+            {{ render(url('alma_sylius_payment_plugin_render_plans')) }}
+
+
         {% endif %}
-        dfsfsdfdsdsffds
     </div>
 </div>
 
