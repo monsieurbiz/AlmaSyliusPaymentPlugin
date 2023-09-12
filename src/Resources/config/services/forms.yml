@@ -1,0 +1,8 @@
+services:
+  sylius.form.type.checkout_select_payment:
+    class: Alma\SyliusPaymentPlugin\Form\Type\SelectPaymentType
+    arguments:
+      $dataClass: '%sylius.model.order.class%'
+      $validationGroups: '%sylius.form.type.cart.validation_groups%'
+    tags:
+      - { name: 'form.type' }

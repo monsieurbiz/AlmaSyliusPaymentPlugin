@@ -6,16 +6,11 @@
     </div>
     <div class="content">
         <a class="header">{{ form_label(form, null, {'label_attr': {'data-test-payment-method-label': ''}}) }}</a>
-        {{ dump(method.description) }}
         {% if method.description is not null %}
             <div class="description">
                 <p>{{ method.description }} toto</p>
             </div>
         {% endif %}
-        method.gatewayConfig.factoryName =
-        {{ dump(method.gatewayConfig.factoryName) }}
-        {% if method.gatewayConfig.factoryName == 'sylius.pay_pal' %}
-            {{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentPlanController:renderPaymentPageInstallmentPlanAction', {'orderId': order.id})) }}
-        {% endif %}
+        dfsfsdfdsdsffds
     </div>
 </div>
