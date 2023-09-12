@@ -4,20 +4,28 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 
-class InstallmentsController extends AbstractController
+final class InstallmentsController
 {
+    /**
+     * @var Environment
+     */
+    private  $twig;
 
-    public function renderInstallmentPlanAction(): Response
+    public function __construct(
+        Environment $twig
+    ) {
+        $this->twig = $twig;
+    }
+    public function renderInstallmentPlanAction(Request $request): Response
     {
         try {
-            return $this->render('@AlmaSyliusPaymentPlugin/installmentPlan.html.twig', [
-                'toto' => 'VICTOIREEEE',
-            ]);
+            return new Response($this->twig->render('@AlmaSyliusPaymentPlugin/installmentPlan.html.twig', [
+                'toto' => 'VICTOIRE',
+            ]));
         } catch (\InvalidArgumentException $exception) {
             return new Response('');
         }

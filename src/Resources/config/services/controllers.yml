@@ -3,7 +3,9 @@ services:
     public: true
     autowire: true
 
-  alma_sylius_payment_plugin.controller.installments:
+  Alma\SyliusPaymentPlugin\Controller\InstallmentsController:
     class: Alma\SyliusPaymentPlugin\Controller\InstallmentsController
     public: true
+    arguments:
+      $twig: '@twig'
     tags: [ 'controller.service_arguments' ]

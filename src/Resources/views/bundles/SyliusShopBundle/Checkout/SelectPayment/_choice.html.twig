@@ -12,7 +12,10 @@
             </div>
         {% endif %}
         {% if method.gatewayConfig.factoryName == 'alma_payments' %}
-            {{ render(url('alma_sylius_payment_plugin_render_plans')) }}
+            {{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentsController::renderInstallmentPlanAction', {'orderId': order.id})) }}
+        {% endif %}
+        {% if method.gatewayConfig.factoryName == 'sylius.pay_pal' %}
+            {{ render(controller('Sylius\\PayPalPlugin\\Controller\\PayPalButtonsController::renderPaymentPageButtonsAction', {'orderId': order.id})) }}
         {% endif %}
     </div>
 </div>
