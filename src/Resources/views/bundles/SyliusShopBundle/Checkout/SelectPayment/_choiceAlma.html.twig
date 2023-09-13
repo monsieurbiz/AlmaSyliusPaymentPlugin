@@ -11,7 +11,7 @@
                 <p>{{ method.description }}</p>
             </div>
         {% endif %}
-        {{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentsController::renderInstallmentPlanAction', {'orderId': order.id})) }}
+        {{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentsController::renderInstallmentPlanAction', {'orderId': order.id, 'methodPaymentId': method.id})) }}
     </div>
 </div>
 

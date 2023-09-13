@@ -9,4 +9,8 @@ services:
     arguments:
       $twig: '@twig'
       $orderRepository: '@sylius.repository.order'
+      $paymentMethodRepository: '@sylius.repository.payment_method'
+      $almaBridge: '@alma_sylius_payment_plugin.bridge'
+      $localeContext: '@sylius.context.locale'
+      $localeProcessor: '@Sylius\PayPalPlugin\Processor\LocaleProcessorInterface'
     tags: [ 'controller.service_arguments' ]
