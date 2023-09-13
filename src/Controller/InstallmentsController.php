@@ -36,7 +36,7 @@ final class InstallmentsController
             $orderId = $request->attributes->getInt('orderId');
             /** @var OrderInterface $order */
             $order = $this->orderRepository->find($orderId);
-          var_dump($request->attributes);die;
+
 
             return new Response($this->twig->render('@AlmaSyliusPaymentPlugin/installmentPlan.html.twig', [
                 'toto' => $order->getTotal(),
