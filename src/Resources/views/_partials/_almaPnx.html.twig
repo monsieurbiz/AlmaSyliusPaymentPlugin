@@ -1,1 +1,16 @@
-{{ dump(installmentsCount) }}
+<div class="alma ui middle aligned divided list">
+    <p class="ui tiny header">Fast and secure payment by credit card.</p>
+    {% for count, plan in eligibilities['general_3_0_0'].paymentPlan %}
+    <div class="item">
+        <span class="content">
+            {{ plan.due_date }}
+        </span>
+        <span class="right floated content">
+            {{ plan.purchase_amount }}
+            {% if count == 0 %}
+                <small class="description">(Including fees: {{ plan.customer_fee }})</small>
+            {% endif %}
+        </span>
+    </div>
+    {% endfor %}
+</div>

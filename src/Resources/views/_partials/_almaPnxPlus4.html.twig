@@ -1,1 +1,24 @@
 {{ dump(eligibilities) }}
+{% set firstAmount = eligibilities['general_10_0_0'].paymentPlan[0].total_amount %}
+{% set nextAmount = eligibilities['general_10_0_0'].paymentPlan[1].total_amount %}
+<div class="alma ui middle aligned divided list">
+    <p>Fast and secure payment by credit card.</p>
+    {# <span>{{ message|trans({'%name%': 'Fabien'}, 'app') }}{{ "%s today then %d x %s"|trans(firstAmount, installmentsCount - 1, nextAmount) }}</span>#}
+    <strong class="ui tiny header">{{ 'alma_sylius_payment_plugin.checkout.your_credit'|trans }}</strong>
+    <span class="item">
+        <span class="content">Cart total</span>
+        <span class="right floated content"></span>
+    </span>
+    <span class="item">
+        <span class="content">Cost of credit</span>
+        <span class="right floated content"></span>
+    </span>
+    <span class="item">
+        <span class="content">Fixed APR</span>
+        <span class="right floated content"></span>
+    </span>
+    <span class="item bold">
+        <span class="content">Total</span>
+        <span class="right floated content"></span>
+    </span>
+</div>
