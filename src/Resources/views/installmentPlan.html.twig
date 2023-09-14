@@ -1,3 +1,8 @@
 <div class="alma--installement-plan">
-    Installment Plan {{ dump(eligibilities) }}
+    Installment Plan 
+    {% if installmentsCount <= 4 %}
+        {% include '@AlmaSyliusPaymentPlugin/_partials/_almaPnx.html.twig' with {'installmentsCount': installmentsCount, 'eligibilities': eligibilities} %}
+    {% else %}
+        {% include '@AlmaSyliusPaymentPlugin/_partials/_almaPnxPlus4.html.twig' with {'installmentsCount': installmentsCount, 'eligibilities': eligibilities} %}
+    {% endif %}
 </div>
