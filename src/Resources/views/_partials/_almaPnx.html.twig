@@ -1,16 +1,26 @@
-<div class="alma ui middle aligned divided list">
-    <p class="ui tiny header">Fast and secure payment by credit card.</p>
-    {% for count, plan in eligibilities['general_3_0_0'].paymentPlan %}
-    <div class="item">
-        <span class="content">
-            {{ plan.due_date }}
-        </span>
-        <span class="right floated content">
-            {{ plan.purchase_amount }}
-            {% if count == 0 %}
-                <small class="description">(Including fees: {{ plan.customer_fee }})</small>
-            {% endif %}
-        </span>
-    </div>
-    {% endfor %}
+<div class="alma ui">
+    <p class="grey">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
+        {% for count, plan in plans.paymentPlan %}
+            {% set total_amount = plan.total_amount / 100 %}
+            <div class="ui equal height grid">
+                <div class="two column row vertically padded">
+                    <div class="column">
+                        {% if count == 0 %}
+                            {{ 'alma_sylius_payment_plugin.checkout.today'|trans }}
+                        {% else %}
+                            {{ plan.due_date|date("d/m/Y") }}
+                        {% endif %}
+                    </div>
+                    <div class="right aligned column">
+                        {{ total_amount|format_currency('EUR') }}
+                        {% if count == 0 %}
+                            <div class="grey">
+                                <small>(Including fees: {{ plan.customer_fee }})</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="ui divider"></div>
+        {% endfor %}
 </div>

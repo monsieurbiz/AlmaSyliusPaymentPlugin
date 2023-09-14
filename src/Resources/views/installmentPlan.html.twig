@@ -1,7 +1,15 @@
+<style>
+    .alma .grey {
+        color: #7a7a7a;
+    }
+    .alma .ui.tiny.header{
+        font-size: 1rem !important;
+    }
+</style>
 <div class="alma--installement-plan">
     {% if installmentsCount <= 4 %}
-        {% include '@AlmaSyliusPaymentPlugin/_partials/_almaPnx.html.twig' with {'installmentsCount': installmentsCount, 'eligibilities': eligibilities} %}
+        {% include '@AlmaSyliusPaymentPlugin/_partials/_almaPnx.html.twig' with {'installmentsCount': installmentsCount, 'plans': plans} %}
     {% else %}
-        {% include '@AlmaSyliusPaymentPlugin/_partials/_almaPnxPlus4.html.twig' with {'installmentsCount': installmentsCount, 'eligibilities': eligibilities} %}
+        {% include '@AlmaSyliusPaymentPlugin/_partials/_almaPnxPlus4.html.twig' with {'installmentsCount': installmentsCount, 'plans': plans, 'creditInfo': creditInfo} %}
     {% endif %}
 </div>

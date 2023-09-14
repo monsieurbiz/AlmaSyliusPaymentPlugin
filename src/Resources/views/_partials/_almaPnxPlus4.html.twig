@@ -1,24 +1,38 @@
-{{ dump(eligibilities) }}
-{% set firstAmount = eligibilities['general_10_0_0'].paymentPlan[0].total_amount %}
-{% set nextAmount = eligibilities['general_10_0_0'].paymentPlan[1].total_amount %}
-<div class="alma ui middle aligned divided list">
-    <p>Fast and secure payment by credit card.</p>
-    {# <span>{{ message|trans({'%name%': 'Fabien'}, 'app') }}{{ "%s today then %d x %s"|trans(firstAmount, installmentsCount - 1, nextAmount) }}</span>#}
-    <strong class="ui tiny header">{{ 'alma_sylius_payment_plugin.checkout.your_credit'|trans }}</strong>
-    <span class="item">
-        <span class="content">Cart total</span>
-        <span class="right floated content"></span>
-    </span>
-    <span class="item">
-        <span class="content">Cost of credit</span>
-        <span class="right floated content"></span>
-    </span>
-    <span class="item">
-        <span class="content">Fixed APR</span>
-        <span class="right floated content"></span>
-    </span>
-    <span class="item bold">
-        <span class="content">Total</span>
-        <span class="right floated content"></span>
-    </span>
+{% set firstAmount = plans.paymentPlan[0].total_amount / 100 %}
+{% set nextAmount = plans.paymentPlan[1].total_amount / 100 %}
+{% set totalCart = creditInfo.totalCart / 100 %}
+{% set costCredit = creditInfo.costCredit / 100 %}
+{% set taeg = creditInfo.taeg / 10000 %}
+{% set totalCredit = creditInfo.totalCredit / 100 %}
+<div class="alma ui">
+    <p class="grey">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
+    <div class="ui tiny header">{{ 'alma_sylius_payment_plugin.checkout.installment_one_line'|trans({'%firstAmount%': firstAmount|format_currency('EUR'), '%installment%': installmentsCount - 1, '%nextAmount%': nextAmount|format_currency('EUR')}) }}</div>
+    <p class="ui tiny header">{{ 'alma_sylius_payment_plugin.checkout.your_credit'|trans }}</p>
+    <div class="ui equal height grid">
+        <div class="two column row vertically padded">
+            <span class="column">{{ 'alma_sylius_payment_plugin.checkout.cart_total'|trans }}</span>
+            <span class="right aligned column">{{ totalCart|format_currency('EUR') }}</span>
+        </div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui equal height grid">
+        <div class="two column row vertically padded">
+            <span class="column">{{ 'alma_sylius_payment_plugin.checkout.cost_of_credit'|trans }}</span>
+            <span class="right aligned column">{{ costCredit|format_currency('EUR') }}</span>
+        </div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui equal height grid">
+        <div class="two column row vertically padded">
+            <span class="column">{{ 'alma_sylius_payment_plugin.checkout.fixed_apr'|trans }}</span>
+            <span class="right aligned column">{{ taeg|format_percent_number({rounding_mode: 'floor', fraction_digit: 2}) }}</span>
+        </div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui equal height grid">
+        <div class="two column row vertically padded">
+            <span class="column">{{ 'alma_sylius_payment_plugin.checkout.total'|trans }}</span>
+            <span class="right aligned column">{{ totalCredit|format_currency('EUR') }}</span>
+        </div>
+    </div>
 </div>

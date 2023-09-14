@@ -73,18 +73,29 @@ final class InstallmentsController
             /** @var PaymentMethodInterface $paymentMethod */
             $paymentMethod = $this->paymentMethodRepository->find($methodId);
             $installmentsCount = $paymentMethod->getGatewayConfig()->getConfig()["installments_count"];
+            $totalCart = $order->getTotal();
 
             $eligibilities = $this->eligibilityHelper->getEligibilities(
-                $order->getTotal(),
+                $totalCart,
                 $installmentsCount,
                 $order->getBillingAddress()->getCountryCode(),
                 $order->getShippingAddress()->getCountryCode(),
                 substr($request->getLocale(), 0, 2)
             );
 
+            $plan = $eligibilities['general_'.$installmentsCount.'_0_0'];
+
+            $creditInfo = [
+                'totalCart' => $totalCart,
+                'costCredit' => $plan->customerTotalCostAmount,
+                'totalCredit' => $plan->customerTotalCostAmount + $totalCart,
+                'taeg' => $plan->annualInterestRate,
+            ];
+
             return new Response($this->twig->render('@AlmaSyliusPaymentPlugin/installmentPlan.html.twig', [
-                'eligibilities' => $eligibilities,
-                'installmentsCount' => $installmentsCount
+                'plans' => $plan,
+                'installmentsCount' => $installmentsCount,
+                'creditInfo' => $creditInfo
             ]));
         } catch (\InvalidArgumentException $exception) {
             return new Response('');

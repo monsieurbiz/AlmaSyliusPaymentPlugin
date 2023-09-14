@@ -21,3 +21,13 @@ alma_sylius_payment_plugin:
   api:
     live_mode: Live
     test_mode: Test
+  checkout:
+    fast_and_secure_payment_by_credit_card: Paiement rapide et sécurisé, par carte bancaire.
+    today: "Aujourd'hui"
+    installment_one_line: "%firstAmount% aujourd'hui puis %installment% x %nextAmount%"
+    your_credit: Votre crédit
+    cart_total: Votre panier
+    cost_of_credit: Coût du crédit
+    fixed_apr: TAEG fixe
+    total: Total
+
