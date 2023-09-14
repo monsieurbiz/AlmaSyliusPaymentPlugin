@@ -1,4 +1,0 @@
-alma_sylius_payment_plugin:
-  checkout:
-    installment_one_line: '%firstAmount% today then %installment% x %nextAmount%'
-    your_credit: Your credit

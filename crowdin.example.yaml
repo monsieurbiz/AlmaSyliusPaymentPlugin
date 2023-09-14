@@ -1,0 +1,13 @@
+"project_id" : "35"
+"api_token" : "MY_API_TOKEN"
+"base_path" : "src/"
+"base_url" : "https://mycompany.crowdin.com"
+"preserve_hierarchy": true
+
+files:
+  -
+    source: Resources/translations/messages.en.yml
+    translation: Resources/translations/messages.%two_letters_code%.yml
+  -
+    source: Resources/translations/flashes.en.yml
+    translation: Resources/translations/flashes.%two_letters_code%.yml
