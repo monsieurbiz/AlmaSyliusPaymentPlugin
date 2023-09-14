@@ -1,0 +1,5 @@
+services:
+  alma.sylius_payment_plugin.helper.eligibility:
+    class: Alma\SyliusPaymentPlugin\Helper\EligibilityHelper
+    arguments:
+      $almaBridge: '@alma_sylius_payment_plugin.bridge'

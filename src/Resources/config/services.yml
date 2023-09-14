@@ -1,5 +1,6 @@
 imports:
   - services/api.yml
+  - services/helpers.yml
   - services/controllers.yml
   - services/gateway.yml
   - services/actions.yml
