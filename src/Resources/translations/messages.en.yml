@@ -25,3 +25,4 @@ alma_sylius_payment_plugin:
     cost_of_credit: Cost of credit
     fixed_apr: Fixed APR
     total: Total
+    including_fees: "Including fees: %includingFees%"

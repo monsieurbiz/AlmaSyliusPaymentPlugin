@@ -1,12 +1,8 @@
-<style>
-    .alma .grey {
-        color: #7a7a7a;
-    }
-    .alma .ui.tiny.header{
-        font-size: 1rem !important;
-    }
-</style>
-<div class="alma--installement-plan">
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('/bundles/almasyliuspaymentplugin/css/alma.css') }}">
+{% endblock %}
+<div class="alma ui">
     {% if installmentsCount <= 4 %}
         {% include '@AlmaSyliusPaymentPlugin/_partials/_almaPnx.html.twig' with {'installmentsCount': installmentsCount, 'plans': plans} %}
     {% else %}

@@ -30,4 +30,5 @@ alma_sylius_payment_plugin:
     cost_of_credit: Coût du crédit
     fixed_apr: TAEG fixe
     total: Total
+    including_fees: "Dont frais inclus: %includingFees%"
 

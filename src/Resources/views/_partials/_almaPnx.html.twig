@@ -1,4 +1,4 @@
-<div class="alma ui">
+<div class="hidden">
     <p class="grey">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
         {% for count, plan in plans.paymentPlan %}
             {% set total_amount = plan.total_amount / 100 %}
@@ -15,7 +15,9 @@
                         {{ total_amount|format_currency('EUR') }}
                         {% if count == 0 %}
                             <div class="grey">
-                                <small>(Including fees: {{ plan.customer_fee }})</small>
+                                <small>
+                                    ({{ 'alma_sylius_payment_plugin.checkout.including_fees'|trans({'%includingFees%': plan.customer_fee}) }})
+                                </small>
                             </div>
                         {% endif %}
                     </div>

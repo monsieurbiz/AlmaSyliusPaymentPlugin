@@ -4,7 +4,7 @@
 {% set costCredit = creditInfo.costCredit / 100 %}
 {% set taeg = creditInfo.taeg / 10000 %}
 {% set totalCredit = creditInfo.totalCredit / 100 %}
-<div class="alma ui">
+<div class="hidden">
     <p class="grey">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
     <div class="ui tiny header">{{ 'alma_sylius_payment_plugin.checkout.installment_one_line'|trans({'%firstAmount%': firstAmount|format_currency('EUR'), '%installment%': installmentsCount - 1, '%nextAmount%': nextAmount|format_currency('EUR')}) }}</div>
     <p class="ui tiny header">{{ 'alma_sylius_payment_plugin.checkout.your_credit'|trans }}</p>

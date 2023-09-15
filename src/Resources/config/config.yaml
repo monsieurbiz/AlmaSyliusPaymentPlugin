@@ -1,3 +1,0 @@
-twig:
-  paths:
-    '%kernel.project_dir%/vendor/alma/sylius-payment-plugin/src/Resources/views/bundles/SyliusShopBundle': SyliusShop

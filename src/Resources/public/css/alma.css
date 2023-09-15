@@ -1,0 +1,9 @@
+.alma .grey {
+    color: #7a7a7a;
+}
+.alma .ui.tiny.header{
+    font-size: 1rem !important;
+}
+.alma .hidden{
+    display: none;
+}
