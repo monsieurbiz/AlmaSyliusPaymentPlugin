@@ -55,8 +55,8 @@ $ php bin/console cache:clear
 
 ### Requirements
 
-- PHP version >= 8.0
-- Sylius version >= 1.10.0
+- PHP version >= 7.3
+- Sylius version >= 1.9.0
 
 Alma currently accepts Euros only; make sure you activate your payment method on channels that use that currency, else 
 you won't see it at checkout.
