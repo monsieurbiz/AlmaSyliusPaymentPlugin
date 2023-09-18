@@ -16,7 +16,7 @@
                         {% if count == 0 %}
                             <div class="grey">
                                 <small>
-                                    ({{ 'alma_sylius_payment_plugin.checkout.including_fees'|trans({'%includingFees%': plan.customer_fee}) }})
+                                    ({{ 'alma_sylius_payment_plugin.checkout.including_fees'|trans({'%includingFees%': plan.customer_fee|alma_price_from_cent|format_currency('EUR')}) }})
                                 </small>
                             </div>
                         {% endif %}

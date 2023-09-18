@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Controller;
 
+use Alma\API\Entities\FeePlan;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\Helper\EligibilityHelper;
+use Psr\Log\LoggerInterface;
 use Sylius\Bundle\CoreBundle\Doctrine\ORM\PaymentMethodRepository;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
@@ -37,21 +39,29 @@ final class InstallmentsController
     private $eligibilityHelper;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param Environment $twig
      * @param OrderRepositoryInterface $orderRepository
      * @param PaymentMethodRepository $paymentMethodRepository
      * @param EligibilityHelper $eligibilityHelper
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Environment $twig,
         OrderRepositoryInterface $orderRepository,
         PaymentMethodRepository $paymentMethodRepository,
-        EligibilityHelper $eligibilityHelper
+        EligibilityHelper $eligibilityHelper,
+        LoggerInterface $logger
     ) {
         $this->twig = $twig;
         $this->orderRepository = $orderRepository;
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->eligibilityHelper = $eligibilityHelper;
+        $this->logger = $logger;
     }
 
     /**
@@ -82,22 +92,29 @@ final class InstallmentsController
                 $order->getShippingAddress()->getCountryCode(),
                 substr($request->getLocale(), 0, 2)
             );
-
+            /**
+             * @var FeePlan $plan
+             */
             $plan = $eligibilities['general_'.$installmentsCount.'_0_0'];
-
-            $creditInfo = [
-                'totalCart' => $totalCart,
-                'costCredit' => $plan->customerTotalCostAmount,
-                'totalCredit' => $plan->customerTotalCostAmount + $totalCart,
-                'taeg' => $plan->annualInterestRate,
-            ];
 
             return new Response($this->twig->render('@AlmaSyliusPaymentPlugin/installmentPlan.html.twig', [
                 'plans' => $plan,
                 'installmentsCount' => $installmentsCount,
-                'creditInfo' => $creditInfo
+                'creditInfo' => [
+                    'totalCart' => $totalCart,
+                    'costCredit' => $plan->customerTotalCostAmount,
+                    'totalCredit' => $plan->customerTotalCostAmount + $totalCart,
+                    'taeg' => $plan->annualInterestRate,
+                ]
             ]));
-        } catch (\InvalidArgumentException $exception) {
+        } catch (\Exception $exception) {
+            $this->logger->error(
+                sprintf(
+                    '[Alma] An error as occurred %s',
+                    $exception->getMessage()
+                ), $exception->getTrace()
+            );
+
             return new Response('');
         }
     }

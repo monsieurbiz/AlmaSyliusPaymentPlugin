@@ -1,8 +1,10 @@
-
 $(function() {
-    console.log('test cclaire !!!!');
-    $('input[data-payment*=alma-method]').on('click', function() {
-        console.log('click click !!!!');
-        $(this).parents('.item').next('.content').show();
+    $('.ui.form .item').each(function(i, e) {
+        $(e).find('.ui.radio').on('click', function() {
+            $('.ui.form .item .content .hidden').hide();
+            if ($(e).find('input[type=radio]').is(':checked')) {
+                $(e).find('.hidden').show();
+            }
+        });
     });
 });
