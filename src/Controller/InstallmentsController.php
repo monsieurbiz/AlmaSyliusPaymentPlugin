@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Controller;
 
 use Alma\API\Entities\FeePlan;
-use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\Helper\EligibilityHelper;
 use Psr\Log\LoggerInterface;
 use Sylius\Bundle\CoreBundle\Doctrine\ORM\PaymentMethodRepository;
@@ -67,9 +66,6 @@ final class InstallmentsController
     /**
      * @param Request $request
      * @return Response
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
      */
     public function renderInstallmentPlanAction(Request $request): Response
     {
