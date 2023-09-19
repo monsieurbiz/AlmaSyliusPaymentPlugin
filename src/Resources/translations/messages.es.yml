@@ -17,6 +17,7 @@ alma_sylius_payment_plugin:
     live_mode: Live
     test_mode: Test
   checkout:
+    logo_alma: Logo Alma
     fast_and_secure_payment_by_credit_card: Fast and secure payment by credit card
     today: Today
     installment_one_line: '%firstAmount% today then %installment% x %nextAmount%'

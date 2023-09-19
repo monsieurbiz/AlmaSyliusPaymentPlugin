@@ -7,7 +7,7 @@
     <div class="content">
         <a class="header">
             {{ form_label(form, null, {'label_attr': {'data-test-payment-method-label': ''}}) }}
-            <img src="{{ asset('/bundles/almasyliuspaymentplugin/img/p' ~ method.gatewayConfig.config.installments_count ~ 'x_logo.svg') }}" class="ui center aligned inline image" alt="Logo Alma" />
+            <img src="{{ asset('/bundles/almasyliuspaymentplugin/img/p' ~ method.gatewayConfig.config.installments_count ~ 'x_logo.svg') }}" class="ui center aligned inline image" alt="{{ 'alma_sylius_payment_plugin.checkout.logo_alma'|trans }}" />
         </a>
         {% if method.description is not null %}
             <div class="description">
