@@ -1,29 +1,29 @@
 alma_sylius_payment_plugin:
   config:
-    live_api_key_label: Live API key
-    test_api_key_label: Test API key
-    find_api_keys_in_dashboard: You can find your API keys <a href="https://dashboard.getalma.eu/api">on your dashboard</a>.
-    api_mode_label: API mode
-    api_mode_tip: As the Test mode allows completing an order with a test credit card, you should avoid activating it in production.
-    installments_count_label: Installments count
-    installments_count_choice_label: '%installments_count% installments'
-    payment_page_mode_label: Payment page mode
+    live_api_key_label: Clave Live API
+    test_api_key_label: Clave API de prueba
+    find_api_keys_in_dashboard: Puede encontrar sus claves API <a href="https://dashboard.getalma.eu/api">en su panel de control</a>.
+    api_mode_label: Modo API
+    api_mode_tip: Como el modo de prueba permite completar un pedido con una tarjeta de crédito de prueba, debe evitar activarlo en producción.
+    installments_count_label: Los plazos cuentan
+    installments_count_choice_label: '%installments_count% plazos'
+    payment_page_mode_label: Modo de página de pago
     payment_page_mode_in_page: Iframe
-    payment_page_mode_redirect: Redirect to Alma
+    payment_page_mode_redirect: Redirigir a Alma
   errors:
-    invalid_api_key: API key is invalid
-    empty_api_key: Please provide an API key
+    invalid_api_key: La clave API no es válida
+    empty_api_key: Proporcione una clave API
   api:
-    live_mode: Live
-    test_mode: Test
+    live_mode: En directo
+    test_mode: Prueba
   checkout:
     logo_alma: Logo Alma
-    fast_and_secure_payment_by_credit_card: Fast and secure payment by credit card
-    today: Today
-    installment_one_line: '%firstAmount% today then %installment% x %nextAmount%'
-    your_credit: Your credit
-    cart_total: Cart total
-    cost_of_credit: Cost of credit
-    fixed_apr: Fixed APR
+    fast_and_secure_payment_by_credit_card: Pago rápido y seguro con tarjeta de crédito
+    today: Hoy
+    installment_one_line: '%firstAmount% hoy entonces %installment% x %nextAmount%'
+    your_credit: Su crédito
+    cart_total: Total de la cesta
+    cost_of_credit: Coste del crédito
+    fixed_apr: TAE fija
     total: Total
-    including_fees: "Including fees: %includingFees%"
+    including_fees: "Tasas incluidas: %includingFees%"

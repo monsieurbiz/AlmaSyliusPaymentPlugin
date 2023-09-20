@@ -1,5 +1,5 @@
 alma_sylius_payment_plugin:
   payment:
-    failed_refunded: An error occurred. Your Alma payment has been fully refunded. Please try again.
-    failed_not_refunded: 'An error occurred and your Alma payment could not be refunded. Please contact us and provide the following reference: %pid%'
-    creation_failed: An error occurred during payment initialization. Please try again or choose another payment method.
+    failed_refunded: Er heeft zich een fout voorgedaan. Uw Alma-betaling is volledig terugbetaald. Probeer het opnieuw.
+    failed_not_refunded: 'Er is een fout opgetreden en uw Alma-betaling kon niet worden terugbetaald. Neem contact met ons op en vermeld de volgende referentie: %pid%'
+    creation_failed: Er is een fout opgetreden tijdens het initialiseren van de betaling. Probeer het opnieuw of kies een andere betaalmethode.

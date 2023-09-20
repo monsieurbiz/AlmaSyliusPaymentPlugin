@@ -1,29 +1,29 @@
 alma_sylius_payment_plugin:
   config:
-    live_api_key_label: Live API key
-    test_api_key_label: Test API key
-    find_api_keys_in_dashboard: You can find your API keys <a href="https://dashboard.getalma.eu/api">on your dashboard</a>.
-    api_mode_label: API mode
-    api_mode_tip: As the Test mode allows completing an order with a test credit card, you should avoid activating it in production.
-    installments_count_label: Installments count
-    installments_count_choice_label: '%installments_count% installments'
-    payment_page_mode_label: Payment page mode
+    live_api_key_label: Live API-sleutel
+    test_api_key_label: Test API-sleutel
+    find_api_keys_in_dashboard: Je kunt je API-sleutels <a href="https://dashboard.getalma.eu/api">vinden op je dashboard</a>.
+    api_mode_label: API-modus
+    api_mode_tip: Aangezien je met de Testmodus een bestelling kunt voltooien met een testcreditcard, moet je deze modus niet activeren in productie.
+    installments_count_label: Termijnen tellen
+    installments_count_choice_label: '%installments_count% termijnen'
+    payment_page_mode_label: Modus betalingspagina
     payment_page_mode_in_page: Iframe
-    payment_page_mode_redirect: Redirect to Alma
+    payment_page_mode_redirect: Doorverwijzen naar Alma
   errors:
-    invalid_api_key: API key is invalid
-    empty_api_key: Please provide an API key
+    invalid_api_key: API-sleutel is ongeldig
+    empty_api_key: Geef een API-sleutel op
   api:
     live_mode: Live
     test_mode: Test
   checkout:
     logo_alma: Logo Alma
-    fast_and_secure_payment_by_credit_card: Fast and secure payment by credit card
-    today: Today
-    installment_one_line: '%firstAmount% today then %installment% x %nextAmount%'
-    your_credit: Your credit
-    cart_total: Cart total
-    cost_of_credit: Cost of credit
-    fixed_apr: Fixed APR
-    total: Total
-    including_fees: "Including fees: %includingFees%"
+    fast_and_secure_payment_by_credit_card: Snelle en veilige betaling met creditcard
+    today: Vandaag
+    installment_one_line: '%firstAmount% vandaag dan %installment% x %nextAmount%'
+    your_credit: Uw krediet
+    cart_total: Totaal winkelwagen
+    cost_of_credit: Kosten van krediet
+    fixed_apr: Vast JKP
+    total: Totaal
+    including_fees: "Inclusief kosten: %includingFees%"

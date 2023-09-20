@@ -1,29 +1,29 @@
 alma_sylius_payment_plugin:
   config:
-    live_api_key_label: Live API key
-    test_api_key_label: Test API key
-    find_api_keys_in_dashboard: You can find your API keys <a href="https://dashboard.getalma.eu/api">on your dashboard</a>.
-    api_mode_label: API mode
-    api_mode_tip: As the Test mode allows completing an order with a test credit card, you should avoid activating it in production.
-    installments_count_label: Installments count
-    installments_count_choice_label: '%installments_count% installments'
-    payment_page_mode_label: Payment page mode
+    live_api_key_label: Chiave API live
+    test_api_key_label: Chiave API di prova
+    find_api_keys_in_dashboard: Potete trovare le vostre chiavi API <a href="https://dashboard.getalma.eu/api">sul vostro cruscotto</a>.
+    api_mode_label: Modalità API
+    api_mode_tip: Poiché la modalità di prova consente di completare un ordine con una carta di credito di prova, si dovrebbe evitare di attivarla in produzione.
+    installments_count_label: Conteggio delle rate
+    installments_count_choice_label: '%installments_count% rate'
+    payment_page_mode_label: Modalità della pagina di pagamento
     payment_page_mode_in_page: Iframe
-    payment_page_mode_redirect: Redirect to Alma
+    payment_page_mode_redirect: Reindirizzare ad Alma
   errors:
-    invalid_api_key: API key is invalid
-    empty_api_key: Please provide an API key
+    invalid_api_key: La chiave API non è valida
+    empty_api_key: Fornire una chiave API
   api:
-    live_mode: Live
+    live_mode: In diretta
     test_mode: Test
   checkout:
     logo_alma: Logo Alma
-    fast_and_secure_payment_by_credit_card: Fast and secure payment by credit card
-    today: Today
-    installment_one_line: '%firstAmount% today then %installment% x %nextAmount%'
-    your_credit: Your credit
-    cart_total: Cart total
-    cost_of_credit: Cost of credit
-    fixed_apr: Fixed APR
-    total: Total
-    including_fees: "Including fees: %includingFees%"
+    fast_and_secure_payment_by_credit_card: Pagamento rapido e sicuro con carta di credito
+    today: Oggi
+    installment_one_line: '%firstAmount% oggi poi %installment% x %nextAmount%'
+    your_credit: Il vostro credito
+    cart_total: Totale carrello
+    cost_of_credit: Costo del credito
+    fixed_apr: TAEG fisso
+    total: Totale
+    including_fees: "Comprese le tasse: %includingFees%"
