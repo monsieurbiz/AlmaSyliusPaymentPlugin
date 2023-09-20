@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Helper;
 
 
+use Alma\API\Endpoints\Results\Eligibility;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
+use Alma\SyliusPaymentPlugin\DataBuilder\EligibilityDataBuilder;
 
 final class EligibilityHelper
 {
@@ -15,12 +17,20 @@ final class EligibilityHelper
     private $almaBridge;
 
     /**
+     * @var EligibilityDataBuilder
+     */
+    private $eligibilityDataBuilder;
+
+    /**
      * @param AlmaBridgeInterface $almaBridge
+     * @param EligibilityDataBuilder $eligibilityDataBuilder
      */
     public function __construct(
-        AlmaBridgeInterface $almaBridge
+        AlmaBridgeInterface $almaBridge,
+        EligibilityDataBuilder $eligibilityDataBuilder
     ) {
         $this->almaBridge = $almaBridge;
+        $this->eligibilityDataBuilder = $eligibilityDataBuilder;
     }
 
     /**
@@ -29,28 +39,26 @@ final class EligibilityHelper
      * @param string $billingCountryCode
      * @param string $shippingCountryCode
      * @param string $locale
-     * @return \Alma\API\Endpoints\Results\Eligibility|\Alma\API\Endpoints\Results\Eligibility[]|array
+     * @return Eligibility|Eligibility[]|array
      */
-    public function getEligibilities(int $amount, int $installmentCounts, string $billingCountryCode, string $shippingCountryCode, string $locale)
+    public function getEligibilities(
+        int $amount,
+        int $installmentCounts,
+        string $billingCountryCode,
+        string $shippingCountryCode,
+        string $locale
+    )
     {
-        $data = [
-            "purchase_amount" => $amount,
-            "queries" => [
-                [
-                    "installments_count" =>  $installmentCounts,
-                    "deferred_days" =>  "0",
-                    "deferred_months" =>  "0"
-                ]
-            ],
-            "billing_address" => [
-                "country" => $billingCountryCode,
-            ],
-            "shipping_address" => [
-                "country" => $shippingCountryCode
-            ],
-            "locale" => $locale,
-        ];
+        $data = $this->eligibilityDataBuilder;
 
-        return $this->almaBridge->retrieveEligibilities($data);
+        return $this->almaBridge->retrieveEligibilities(
+            $data(
+                $amount,
+                $installmentCounts,
+                $billingCountryCode,
+                $shippingCountryCode,
+                $locale
+            )
+        );
     }
 }
