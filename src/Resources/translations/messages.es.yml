@@ -9,7 +9,7 @@ alma_sylius_payment_plugin:
     installments_count_choice_label: '%installments_count% plazos'
     payment_page_mode_label: Modo de página de pago
     payment_page_mode_in_page: Iframe
-    payment_page_mode_redirect: Redirigir a Alma
+    payment_page_mode_redirect: Redirigir a Alma (Recomendado)
   errors:
     invalid_api_key: La clave API no es válida
     empty_api_key: Proporcione una clave API

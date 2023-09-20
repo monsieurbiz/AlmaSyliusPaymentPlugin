@@ -9,7 +9,7 @@ alma_sylius_payment_plugin:
     installments_count_choice_label: '%installments_count% échéances'
     payment_page_mode_label: Mode de la page de paiement
     payment_page_mode_in_page: Intégré (iframe)
-    payment_page_mode_redirect: Redirection vers Alma
+    payment_page_mode_redirect: Redirection vers Alma (Recommandé)
   errors:
     invalid_api_key: Clé d'API invalide
     empty_api_key: La clé d'API doit être renseignée

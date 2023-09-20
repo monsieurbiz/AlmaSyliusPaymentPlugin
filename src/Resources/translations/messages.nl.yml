@@ -9,7 +9,7 @@ alma_sylius_payment_plugin:
     installments_count_choice_label: '%installments_count% termijnen'
     payment_page_mode_label: Modus betalingspagina
     payment_page_mode_in_page: Iframe
-    payment_page_mode_redirect: Doorverwijzen naar Alma
+    payment_page_mode_redirect: Doorverwijzen naar Alma (aanbevolen)
   errors:
     invalid_api_key: API-sleutel is ongeldig
     empty_api_key: Geef een API-sleutel op
