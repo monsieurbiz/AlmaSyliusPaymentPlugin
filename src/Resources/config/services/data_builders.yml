@@ -37,7 +37,7 @@ services:
       - name: alma_sylius_payment_plugin.payment_data_builder
         id: shipping_info
 
-  alma_sylius_payment_plugin.payment_data_builder.cart  :
+  alma_sylius_payment_plugin.payment_data_builder.cart:
     class: Alma\SyliusPaymentPlugin\DataBuilder\CartDataBuilder
     arguments:
       $router: '@router'
@@ -46,3 +46,8 @@ services:
     tags:
       - name: alma_sylius_payment_plugin.payment_data_builder
         id: cart
+  alma_sylius_payment_plugin.eligibility_data_builder:
+    class: Alma\SyliusPaymentPlugin\DataBuilder\EligibilityDataBuilder
+    tags:
+      - name: alma_sylius_payment_plugin.eligibility_data_builder
+        id: eligibility

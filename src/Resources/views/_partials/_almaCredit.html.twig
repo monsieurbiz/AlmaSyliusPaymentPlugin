@@ -1,0 +1,34 @@
+{% set firstAmount = plans.paymentPlan[0].total_amount %}
+{% set nextAmount = plans.paymentPlan[1].total_amount %}
+<div class="hidden">
+    <p class="grey">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
+    <div class="ui tiny header">{{ 'alma_sylius_payment_plugin.checkout.installment_one_line'|trans({'%firstAmount%': firstAmount|alma_price_from_cent|format_currency('EUR'), '%installment%': installmentsCount - 1, '%nextAmount%': nextAmount|alma_price_from_cent|format_currency('EUR')}) }}</div>
+    <p class="ui tiny header">{{ 'alma_sylius_payment_plugin.checkout.your_credit'|trans }}</p>
+    <div class="ui equal height grid">
+        <div class="two column row vertically padded">
+            <span class="column">{{ 'alma_sylius_payment_plugin.checkout.cart_total'|trans }}</span>
+            <span class="right aligned column">{{ creditInfo.totalCart|alma_price_from_cent|format_currency('EUR') }}</span>
+        </div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui equal height grid">
+        <div class="two column row vertically padded">
+            <span class="column">{{ 'alma_sylius_payment_plugin.checkout.cost_of_credit'|trans }}</span>
+            <span class="right aligned column">{{ creditInfo.costCredit|alma_price_from_cent|format_currency('EUR') }}</span>
+        </div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui equal height grid">
+        <div class="two column row vertically padded">
+            <span class="column">{{ 'alma_sylius_payment_plugin.checkout.fixed_apr'|trans }}</span>
+            <span class="right aligned column">{{ creditInfo.taeg|alma_format_percent_number }}</span>
+        </div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="ui equal height grid">
+        <div class="two column row vertically padded">
+            <span class="column">{{ 'alma_sylius_payment_plugin.checkout.total'|trans }}</span>
+            <span class="right aligned column">{{ creditInfo.totalCredit|alma_price_from_cent|format_currency('EUR') }}</span>
+        </div>
+    </div>
+</div>

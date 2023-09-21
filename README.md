@@ -10,26 +10,54 @@
 ## Documentation
 
 ### Installation
-Use Composer to install the plugin:
+1. Use Composer to install the plugin:
 
 ```
 $ composer require alma/sylius-payment-plugin
 ```
 
-Update your shop's translation catalogs:
+2. Import routes:
+
+```
+# config/routes/sylius_shop.yaml
+
+sylius_alma:
+    resource: "@AlmaSyliusPaymentPlugin/Resources/config/shop_routing.yaml"
+    prefix: /{_locale}
+    requirements:
+        _locale: ^[A-Za-z]{2,4}(_([A-Za-z]{4}|[0-9]{3}))?(_([A-Za-z]{2}|[0-9]{3}))?$
+```
+
+3. Override Sylius' templates:
+
+```
+cp -R vendor/alma/sylius-payment-plugin/src/Resources/views/bundles/* templates/bundles/
+```
+
+4. Export assets:
+
+```
+bin/console sylius:install:asset
+```
+
+5. Update your shop's translation catalogs:
 
 ```
 $ php bin/console translation:update --dump-messages fr AlmaSyliusPaymentPlugin 
 $ php bin/console translation:update --dump-messages en AlmaSyliusPaymentPlugin 
 ```
 
-Finally, clear your cache:
+6. Finally, clear your cache:
 
 ```
 $ php bin/console cache:clear
 ```
 
 ### Requirements
+
+- PHP version >= 7.3
+- Sylius version >= 1.9.0
+
 Alma currently accepts Euros only; make sure you activate your payment method on channels that use that currency, else 
 you won't see it at checkout.
 

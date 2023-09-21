@@ -1,0 +1,21 @@
+<div class="item" {{ sylius_test_html_attribute('payment-item') }}>
+    <div class="field">
+        <div class="ui radio checkbox" {{ sylius_test_html_attribute('payment-method-checkbox') }}>
+            {{ form_widget(form, sylius_test_form_attribute('payment-method-select')|sylius_merge_recursive( {'attr': {'data-payment': 'alma-method-id-' ~ method.id}})) }}
+        </div>
+    </div>
+    <div class="content">
+        <a class="header">
+            {{ form_label(form, null, {'label_attr': {'data-test-payment-method-label': ''}}) }}
+            <img src="{{ asset('/bundles/almasyliuspaymentplugin/img/p' ~ method.gatewayConfig.config.installments_count ~ 'x_logo.svg') }}" class="ui center aligned inline image" alt="{{ 'alma_sylius_payment_plugin.checkout.logo_alma'|trans }}" />
+        </a>
+        {% if method.description is not null %}
+            <div class="description">
+                <p>{{ method.description }}</p>
+            </div>
+        {% endif %}
+        {{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentsController::renderInstallmentPlanAction', {'orderId': order.id, 'methodPaymentId': method.id})) }}
+    </div>
+</div>
+
+

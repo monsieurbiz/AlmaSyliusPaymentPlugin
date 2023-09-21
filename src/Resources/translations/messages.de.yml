@@ -1,0 +1,29 @@
+alma_sylius_payment_plugin:
+  config:
+    live_api_key_label: Live-API-Schlüssel
+    test_api_key_label: API-Schlüssel testen
+    find_api_keys_in_dashboard: Sie können Ihre API-Schlüssel <a href="https://dashboard.getalma.eu/api">auf Ihrem Dashboard</a>finden.
+    api_mode_label: API-Modus
+    api_mode_tip: Da der Testmodus den Abschluss einer Bestellung mit einer Testkreditkarte ermöglicht, sollten Sie ihn nicht in der Produktion aktivieren.
+    installments_count_label: Raten zählen
+    installments_count_choice_label: '%installments_count% Ratenzahlungen'
+    payment_page_mode_label: Modus der Zahlungsseite
+    payment_page_mode_in_page: Iframe
+    payment_page_mode_redirect: Weiterleitung zu Alma (empfohlen)
+  errors:
+    invalid_api_key: API-Schlüssel ist ungültig
+    empty_api_key: Bitte geben Sie einen API-Schlüssel an
+  api:
+    live_mode: Live
+    test_mode: Test
+  checkout:
+    logo_alma: Logo Alma
+    fast_and_secure_payment_by_credit_card: Schnelle und sichere Zahlung per Kreditkarte
+    today: Heute
+    installment_one_line: '%firstAmount% heute dann %installment% x %nextAmount%'
+    your_credit: Ihr Kredit
+    cart_total: Warenkorb gesamt
+    cost_of_credit: Kosten des Kredits
+    fixed_apr: Fester effektiver Jahreszins
+    total: Insgesamt
+    including_fees: "Einschließlich Gebühren: %includingFees%"

@@ -89,6 +89,10 @@ final class AlmaGatewayConfigurationType extends AbstractType
                             ['%installments_count%' => 3]) => 3,
                         $this->translator->trans('alma_sylius_payment_plugin.config.installments_count_choice_label',
                             ['%installments_count%' => 4]) => 4,
+                        $this->translator->trans('alma_sylius_payment_plugin.config.installments_count_choice_label',
+                            ['%installments_count%' => 10]) => 10,
+                        $this->translator->trans('alma_sylius_payment_plugin.config.installments_count_choice_label',
+                            ['%installments_count%' => 12]) => 12,
                     ],
                     'label' => $this->translator->trans('alma_sylius_payment_plugin.config.installments_count_label'),
                 ]

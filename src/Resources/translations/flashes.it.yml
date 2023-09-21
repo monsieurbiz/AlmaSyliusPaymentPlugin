@@ -1,0 +1,5 @@
+alma_sylius_payment_plugin:
+  payment:
+    failed_refunded: Si è verificato un errore. Il pagamento Alma è stato completamente rimborsato. Si prega di riprovare.
+    failed_not_refunded: 'Si è verificato un errore e non è stato possibile rimborsare il pagamento Alma. Si prega di contattarci e di fornire il seguente riferimento: %pid%'
+    creation_failed: Si è verificato un errore durante l'inizializzazione del pagamento. Riprovare o scegliere un altro metodo di pagamento.

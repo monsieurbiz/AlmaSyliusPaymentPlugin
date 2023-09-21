@@ -1,0 +1,5 @@
+alma_sylius_payment_plugin_render_plans:
+    path: /alma-render-plans/{orderId}
+    methods: [GET]
+    defaults:
+        _controller: alma_sylius_payment_plugin.controller.installments::renderInstallmentPlanAction

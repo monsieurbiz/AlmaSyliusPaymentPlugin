@@ -1,0 +1,15 @@
+services:
+  _defaults:
+    public: true
+    autowire: true
+
+  Alma\SyliusPaymentPlugin\Controller\InstallmentsController:
+    class: Alma\SyliusPaymentPlugin\Controller\InstallmentsController
+    public: true
+    arguments:
+      $twig: '@twig'
+      $orderRepository: '@sylius.repository.order'
+      $paymentMethodRepository: '@sylius.repository.payment_method'
+      $eligibilityHelper: '@alma.sylius_payment_plugin.helper.eligibility'
+      $logger: '@logger'
+    tags: [ 'controller.service_arguments' ]

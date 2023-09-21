@@ -1,7 +1,7 @@
 /vendor/
 /node_modules/
 /composer.lock
-
+.idea/*
 /etc/build/*
 !/etc/build/.gitignore
 
@@ -11,3 +11,4 @@
 /behat.yml
 /phpspec.yml
 /phpunit.xml
+/crowdin.yaml
