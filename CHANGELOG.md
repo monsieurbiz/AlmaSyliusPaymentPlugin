@@ -1,5 +1,12 @@
 # Changelog
 
+v2.0.0
+------
+
+- Fix: Compatibility Sylius 1.12
+- Feat: Add installment P10/12X
+- Feat: Display installment's plan in checkout page
+
 v1.3.0
 ------
 

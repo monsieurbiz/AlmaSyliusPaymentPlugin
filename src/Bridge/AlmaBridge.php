@@ -142,6 +142,23 @@ final class AlmaBridge implements AlmaBridgeInterface
     }
 
     /**
+     * Retrieve the eligibilities from the data array sent
+     *
+     * @param array $data
+     * @return \Alma\API\Endpoints\Results\Eligibility|\Alma\API\Endpoints\Results\Eligibility[]|array
+     */
+    public function retrieveEligibilities(array $data)
+    {
+        $alma = $this->getDefaultClient();
+        try {
+            return $alma->payments->eligibility($data, true);
+        } catch (RequestError $e) {
+            $this->logger->error("[Alma] Eligibility call failed with error: " . $e->getMessage());
+        }
+
+        return [];
+    }
+    /**
      * @inheritDoc
      */
     public function validatePayment(

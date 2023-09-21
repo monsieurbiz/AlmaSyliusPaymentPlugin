@@ -1,0 +1,28 @@
+<div class="hidden">
+    <p class="grey">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
+        {% for count, plan in plans.paymentPlan %}
+            {% set total_amount = plan.total_amount / 100 %}
+            <div class="ui equal height grid">
+                <div class="two column row vertically padded">
+                    <div class="column">
+                        {% if count == 0 %}
+                            {{ 'alma_sylius_payment_plugin.checkout.today'|trans }}
+                        {% else %}
+                            {{ plan.due_date|date("d/m/Y") }}
+                        {% endif %}
+                    </div>
+                    <div class="right aligned column">
+                        {{ total_amount|format_currency('EUR') }}
+                        {% if count == 0 %}
+                            <div class="grey">
+                                <small>
+                                    ({{ 'alma_sylius_payment_plugin.checkout.including_fees'|trans({'%includingFees%': plan.customer_fee|alma_price_from_cent|format_currency('EUR')}) }})
+                                </small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="ui divider"></div>
+        {% endfor %}
+</div>

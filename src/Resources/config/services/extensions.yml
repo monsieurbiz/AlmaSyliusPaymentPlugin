@@ -8,3 +8,8 @@ services:
     tags:
       - name: payum.extension
         factory: alma_payments
+
+  Alma\SyliusPaymentPlugin\Twig\AlmaExtension:
+    public: true
+    tags:
+      - name: twig.extension

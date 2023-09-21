@@ -1,0 +1,29 @@
+alma_sylius_payment_plugin:
+  config:
+    live_api_key_label: Live API-sleutel
+    test_api_key_label: Test API-sleutel
+    find_api_keys_in_dashboard: Je kunt je API-sleutels <a href="https://dashboard.getalma.eu/api">vinden op je dashboard</a>.
+    api_mode_label: API-modus
+    api_mode_tip: Aangezien je met de Testmodus een bestelling kunt voltooien met een testcreditcard, moet je deze modus niet activeren in productie.
+    installments_count_label: Termijnen tellen
+    installments_count_choice_label: '%installments_count% termijnen'
+    payment_page_mode_label: Modus betalingspagina
+    payment_page_mode_in_page: Iframe
+    payment_page_mode_redirect: Doorverwijzen naar Alma (aanbevolen)
+  errors:
+    invalid_api_key: API-sleutel is ongeldig
+    empty_api_key: Geef een API-sleutel op
+  api:
+    live_mode: Live
+    test_mode: Test
+  checkout:
+    logo_alma: Logo Alma
+    fast_and_secure_payment_by_credit_card: Snelle en veilige betaling met creditcard
+    today: Vandaag
+    installment_one_line: '%firstAmount% vandaag dan %installment% x %nextAmount%'
+    your_credit: Uw krediet
+    cart_total: Totaal winkelwagen
+    cost_of_credit: Kosten van krediet
+    fixed_apr: Vast JKP
+    total: Totaal
+    including_fees: "Inclusief kosten: %includingFees%"

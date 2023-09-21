@@ -1,0 +1,5 @@
+alma_sylius_payment_plugin:
+  payment:
+    failed_refunded: Se ha producido un error. Su pago Alma ha sido reembolsado en su totalidad. Por favor, inténtelo de nuevo.
+    failed_not_refunded: 'Se ha producido un error y no se ha podido reembolsar su pago Alma. Póngase en contacto con nosotros y facilítenos la siguiente referencia: %pid%'
+    creation_failed: Se ha producido un error durante la inicialización del pago. Por favor, inténtelo de nuevo o elija otro método de pago.
