@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://getalma.eu/static/website/new/img/logo.png" alt="logo alma" />
+    <img src="src/Resources/public/img/alma-logo.svg" alt="logo alma" height="75" style="margin-right:30px" />
     <img src="https://demo.sylius.com/assets/shop/img/logo.png" height="75" />
 </p>
 
