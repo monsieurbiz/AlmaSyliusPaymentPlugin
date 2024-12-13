@@ -1,6 +1,7 @@
 {
   "name": "alma/sylius-payment-plugin",
   "type": "sylius-plugin",
+  "version": "2.1.0",
   "keywords": [
     "alma",
     "buy now pay later",

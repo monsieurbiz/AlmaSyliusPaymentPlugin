@@ -158,9 +158,9 @@ class CartDataBuilder implements DataBuilderInterface
         /** @var ImageInterface[] $images */
         $images = $subject->getImages();
 
-        if (count($mainPictures) > 0) {
+        if (!empty($mainPictures) && $mainPictures[0] !== null ) {
             $path = $mainPictures[0]->getPath();
-        } elseif (count($images) > 0) {
+        } elseif (!empty($images) && $images[0] !== null) {
             $path = $images[0]->getPath();
         }
 
