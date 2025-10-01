@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Utils;
 
-
 use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Resource\Model\TranslatableInterface;
 use Sylius\Component\Resource\Model\TranslationInterface;
@@ -13,6 +12,7 @@ class Utils
 {
     /**
      * @param Collection|array $collection
+     *
      * @return array
      */
     public static function getCollectionValues($collection): array

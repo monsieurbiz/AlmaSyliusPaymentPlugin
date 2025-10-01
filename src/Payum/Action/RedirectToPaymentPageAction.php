@@ -25,8 +25,8 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
 {
-    use GatewayAwareTrait;
     use ApiAwareTrait;
+    use GatewayAwareTrait;
 
     /**
      * @var AlmaBridgeInterface
@@ -66,9 +66,9 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
         $details = ArrayObject::ensureArrayObject($captureRequest->getModel());
 
         try {
-            $payment = $alma->payments->create((array)$details[AlmaBridgeInterface::DETAILS_KEY_PAYLOAD]);
+            $payment = $alma->payments->create((array) $details[AlmaBridgeInterface::DETAILS_KEY_PAYLOAD]);
         } catch (RequestError $e) {
-            $this->logger->error("[Alma] Payment creation failed: " . $e->getMessage());
+            $this->logger->error('[Alma] Payment creation failed: ' . $e->getMessage());
             $this->addErrorFlash();
 
             $this->resetPaymentState($captureRequest->getFirstModel(), $details);
@@ -98,7 +98,7 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
     public function supports($request): bool
     {
         return
-            $request instanceof RedirectToPaymentPage &&
-            $request->getModel() instanceof Capture;
+            $request instanceof RedirectToPaymentPage
+            && $request->getModel() instanceof Capture;
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Payum\Gateway;
 
-
 use Alma\API\Client as AlmaClient;
 use Payum\Core\Bridge\Spl\ArrayObject;
 
@@ -20,42 +19,42 @@ class GatewayConfig implements GatewayConfigInterface
         $this->config = $config;
     }
 
-    function getApiMode(): string
+    public function getApiMode(): string
     {
         return $this->config[self::CONFIG_API_MODE];
     }
 
-    function getMerchantId(): string
+    public function getMerchantId(): string
     {
         return $this->config[self::CONFIG_MERCHANT_ID];
     }
 
-    function getActiveApiKey(): string
+    public function getActiveApiKey(): string
     {
-        return ($this->getApiMode() == AlmaClient::LIVE_MODE ? $this->getLiveApiKey() : $this->getTestApiKey());
+        return AlmaClient::LIVE_MODE == $this->getApiMode() ? $this->getLiveApiKey() : $this->getTestApiKey();
     }
 
-    function getLiveApiKey(): string
+    public function getLiveApiKey(): string
     {
         return $this->config[self::CONFIG_LIVE_API_KEY];
     }
 
-    function getTestApiKey(): string
+    public function getTestApiKey(): string
     {
         return $this->config[self::CONFIG_TEST_API_KEY];
     }
 
-    function getInstallmentsCount(): int
+    public function getInstallmentsCount(): int
     {
-        return (int)$this->config[self::CONFIG_INSTALLMENTS_COUNT];
+        return (int) $this->config[self::CONFIG_INSTALLMENTS_COUNT];
     }
 
-    function getPaymentFormTemplate(): string
+    public function getPaymentFormTemplate(): string
     {
         return $this->config[self::CONFIG_PAYMENT_FORM_TEMPLATE];
     }
 
-    function getPaymentPageMode(): string
+    public function getPaymentPageMode(): string
     {
         return $this->config[self::CONFIG_PAYMENT_PAGE_MODE];
     }

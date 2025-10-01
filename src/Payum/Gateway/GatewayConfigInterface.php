@@ -6,33 +6,36 @@ namespace Alma\SyliusPaymentPlugin\Payum\Gateway;
 
 use Payum\Core\Bridge\Spl\ArrayObject;
 
-interface GatewayConfigInterface {
-    const ALLOWED_CURRENCY_CODES = ['EUR'];
+interface GatewayConfigInterface
+{
+    public const ALLOWED_CURRENCY_CODES = ['EUR'];
 
-    const CONFIG_MERCHANT_ID = 'merchant_id';
-    const CONFIG_LIVE_API_KEY = 'live_api_key';
-    const CONFIG_TEST_API_KEY = 'test_api_key';
-    const CONFIG_API_MODE = 'api_mode';
-    const CONFIG_INSTALLMENTS_COUNT = 'installments_count';
-    const CONFIG_PAYMENT_PAGE_MODE = 'payment_page_mode';
-    const CONFIG_PAYMENT_FORM_TEMPLATE = 'payum.template.payment_form_template';
+    public const CONFIG_MERCHANT_ID = 'merchant_id';
+    public const CONFIG_LIVE_API_KEY = 'live_api_key';
+    public const CONFIG_TEST_API_KEY = 'test_api_key';
+    public const CONFIG_API_MODE = 'api_mode';
+    public const CONFIG_INSTALLMENTS_COUNT = 'installments_count';
+    public const CONFIG_PAYMENT_PAGE_MODE = 'payment_page_mode';
+    public const CONFIG_PAYMENT_FORM_TEMPLATE = 'payum.template.payment_form_template';
 
-    const PAYMENT_PAGE_MODE_IN_PAGE = 'payment_page_mode.in_page';
-    const PAYMENT_PAGE_MODE_REDIRECT = 'payment_page_mode.redirect';
+    public const PAYMENT_PAGE_MODE_IN_PAGE = 'payment_page_mode.in_page';
+    public const PAYMENT_PAGE_MODE_REDIRECT = 'payment_page_mode.redirect';
 
     public function __construct(ArrayObject $config);
 
-    function getApiMode(): string;
+    public function getApiMode(): string;
 
-    function getMerchantId(): string;
+    public function getMerchantId(): string;
 
-    function getActiveApiKey(): string;
-    function getLiveApiKey(): string;
-    function getTestApiKey(): string;
+    public function getActiveApiKey(): string;
 
-    function getInstallmentsCount(): int;
+    public function getLiveApiKey(): string;
 
-    function getPaymentFormTemplate(): string;
+    public function getTestApiKey(): string;
 
-    function getPaymentPageMode(): string;
+    public function getInstallmentsCount(): int;
+
+    public function getPaymentFormTemplate(): string;
+
+    public function getPaymentPageMode(): string;
 }

@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\DataBuilder;
 
-
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Webmozart\Assert\Assert;
 
 class CustomerDataBuilder implements DataBuilderInterface
 {
-
     public function __invoke(array $data, PaymentInterface $payment): array
     {
         $order = $payment->getOrder();
@@ -23,13 +21,11 @@ class CustomerDataBuilder implements DataBuilderInterface
     }
 
     /**
-     *
      * @psalm-type CustomerData = array{firstName: string, lastName: string, email:String, phoneNumber: String}
      *
-     * @param OrderInterface $order
+     * @return array
      *
      * @psalm-return CustomerData
-     * @return array
      */
     private static function extractCustomerData(OrderInterface $order): array
     {
@@ -43,7 +39,7 @@ class CustomerDataBuilder implements DataBuilderInterface
             'first_name' => 'getFirstName',
             'last_name' => 'getLastName',
             'email' => 'getEmail',
-            'phone' => 'getPhoneNumber'
+            'phone' => 'getPhoneNumber',
         ];
 
         /** @var CustomerData $result */
@@ -52,11 +48,11 @@ class CustomerDataBuilder implements DataBuilderInterface
         foreach ($fields as $field => $getter) {
             foreach ($sources as $source) {
                 $callable = [$source, $getter];
-                if (is_callable($callable)) {
-                    /** @var string | null | false $value */
-                    $value = call_user_func($callable);
+                if (\is_callable($callable)) {
+                    /** @var string|false|null $value */
+                    $value = \call_user_func($callable);
 
-                    if ($value !== false && $value !== null && $value !== "") {
+                    if (false !== $value && null !== $value && '' !== $value) {
                         $result[$field] = $value;
                         break;
                     }

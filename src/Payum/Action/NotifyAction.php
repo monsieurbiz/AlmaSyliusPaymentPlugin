@@ -8,6 +8,7 @@ use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\Payum\Request\ValidatePayment;
 use ArrayAccess;
+use Exception;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
@@ -23,8 +24,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
 {
-    use GatewayAwareTrait;
     use ApiAwareTrait;
+    use GatewayAwareTrait;
 
     public function __construct()
     {
@@ -56,20 +57,16 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         $payment->setDetails($details->getArrayCopy());
 
         // If payment hasn't been validated yet, validate its status against Alma's payment state
-        if (in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)) {
+        if (\in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)) {
             try {
                 $this->gateway->execute(new ValidatePayment($payment));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $error = [
-                    "error" => true,
-                    "message" => $e->getMessage()
+                    'error' => true,
+                    'message' => $e->getMessage(),
                 ];
 
-                throw new HttpResponse(
-                    json_encode($error),
-                    Response::HTTP_INTERNAL_SERVER_ERROR,
-                    ["content-type" => "application/json"]
-                );
+                throw new HttpResponse(json_encode($error), Response::HTTP_INTERNAL_SERVER_ERROR, ['content-type' => 'application/json']);
             }
         }
 
@@ -80,11 +77,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         $details->replace($payment->getDetails());
 
         // Down here means the callback has been correctly handled, regardless of the final payment state
-        throw new HttpResponse(
-            json_encode(["success" => true, "state" => $payment->getDetails()[AlmaBridgeInterface::DETAILS_KEY_IS_VALID]]),
-            Response::HTTP_OK,
-            ["content-type" => "application/json"]
-        );
+        throw new HttpResponse(json_encode(['success' => true, 'state' => $payment->getDetails()[AlmaBridgeInterface::DETAILS_KEY_IS_VALID]]), Response::HTTP_OK, ['content-type' => 'application/json']);
     }
 
     public function supports($request): bool

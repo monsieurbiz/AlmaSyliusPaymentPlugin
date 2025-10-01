@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Bridge;
 
-
 use Alma\API\Client;
 use Alma\API\Entities\Instalment;
 use Alma\API\Entities\Merchant;
 use Alma\API\Entities\Payment;
 use Alma\API\Entities\Payment as AlmaPayment;
-use Alma\API\RequestError;
+use Alma\API\Exceptions\RequestException;
 use Alma\SyliusPaymentPlugin\AlmaSyliusPaymentPlugin;
 use Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilderInterface;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfig;
@@ -22,29 +21,14 @@ use Sylius\Component\Core\Model\PaymentInterface;
 
 final class AlmaBridge implements AlmaBridgeInterface
 {
-    /**
-     * @var GatewayConfig
-     */
-    private $gatewayConfig = null;
+    private ?GatewayConfig $gatewayConfig = null;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private static ?Client $almaClient = null;
 
-    /**
-     * @var Client|null
-     */
-    static private $almaClient;
-    /**
-     * @var PaymentDataBuilderInterface
-     */
-    private $paymentDataBuilder;
-
-    public function __construct(LoggerInterface $logger, PaymentDataBuilderInterface $paymentDataBuilder)
-    {
-        $this->logger = $logger;
-        $this->paymentDataBuilder = $paymentDataBuilder;
+    public function __construct(
+        private LoggerInterface $logger,
+        private PaymentDataBuilderInterface $paymentDataBuilder,
+    ) {
     }
 
     public function initialize(ArrayObject $config): void
@@ -55,7 +39,7 @@ final class AlmaBridge implements AlmaBridgeInterface
 
     public function getDefaultClient(?string $mode = null): Client
     {
-        if ($mode === null) {
+        if (null === $mode) {
             $mode = $this->gatewayConfig->getApiMode();
         }
 
@@ -72,13 +56,12 @@ final class AlmaBridge implements AlmaBridgeInterface
 
     public static function createClientInstance(string $apiKey, string $mode, LoggerInterface $logger): ?Client
     {
-        /** @var Client|null $alma */
         $alma = null;
 
         try {
             $alma = new Client($apiKey, [
                 'mode' => $mode,
-                'logger' => $logger
+                'logger' => $logger,
             ]);
 
             $alma->addUserAgentComponent('Sylius', SyliusCoreBundle::VERSION);
@@ -90,42 +73,36 @@ final class AlmaBridge implements AlmaBridgeInterface
         return $alma;
     }
 
-    function getMerchantInfo(): ?Merchant
+    public function getMerchantInfo(): ?Merchant
     {
         $client = $this->getDefaultClient();
         if (!$client) {
             return null;
         }
 
-        /** @var Merchant|null $merchant */
+        /** @var ?Merchant $merchant */
         $merchant = null;
 
         try {
             $merchant = $client->merchants->me();
-        } catch (RequestError $e) {
+        } catch (RequestException $e) {
             $this->logger->error('[Alma] Error fetching merchant info: ' . $e->getMessage());
         }
 
         return $merchant;
     }
 
-    /**
-     * @return GatewayConfig
-     */
     public function getGatewayConfig(): GatewayConfig
     {
         return $this->gatewayConfig;
     }
 
-    /**
-     * @inheritDoc
-     */
-    function getEligibilities(PaymentInterface $payment, array $installmentsCounts): array
+    public function getEligibilities(PaymentInterface $payment, array $installmentsCounts): array
     {
         $builder = $this->paymentDataBuilder;
         $builder->addBuilder(function (array $data, PaymentInterface $payment) use ($installmentsCounts): array {
             $data['payment'] = array_merge($data['payment'], [
-                "installments_count" => $installmentsCounts
+                'installments_count' => $installmentsCounts,
             ]);
 
             return $data;
@@ -134,44 +111,36 @@ final class AlmaBridge implements AlmaBridgeInterface
         $alma = $this->getDefaultClient();
         try {
             return $alma->payments->eligibility($builder([], $payment), true);
-        } catch (RequestError $e) {
-            $this->logger->error("[Alma] Eligibility call failed with error: " . $e->getMessage());
+        } catch (RequestException $e) {
+            $this->logger->error('[Alma] Eligibility call failed with error: ' . $e->getMessage());
         }
 
         return [];
     }
 
-    /**
-     * Retrieve the eligibilities from the data array sent
-     *
-     * @param array $data
-     * @return \Alma\API\Endpoints\Results\Eligibility|\Alma\API\Endpoints\Results\Eligibility[]|array
-     */
-    public function retrieveEligibilities(array $data)
+    public function retrieveEligibilities(array $data): array
     {
         $alma = $this->getDefaultClient();
         try {
             return $alma->payments->eligibility($data, true);
-        } catch (RequestError $e) {
-            $this->logger->error("[Alma] Eligibility call failed with error: " . $e->getMessage());
+        } catch (RequestException $e) {
+            $this->logger->error('[Alma] Eligibility call failed with error: ' . $e->getMessage());
         }
 
         return [];
     }
-    /**
-     * @inheritDoc
-     */
+
     public function validatePayment(
         PaymentInterface $payment,
         string $almaPaymentId,
-        Payment &$paymentData = null
+        ?Payment &$paymentData = null,
     ): bool {
         /** @var int $pid */
         $pid = $payment->getId();
 
         try {
             $paymentData = $this->getDefaultClient()->payments->fetch($almaPaymentId);
-        } catch (RequestError $e) {
+        } catch (RequestException $e) {
             $this->logger->error("[Alma] Could not fetch payment $almaPaymentId to validate payment $pid");
             throw $e;
         }
@@ -187,10 +156,10 @@ final class AlmaBridge implements AlmaBridgeInterface
             // Check that paid amount matches due amount
             $paymentData->purchase_amount === $payment->getAmount()
             // Check that payment is not expired
-            && $paymentData->expired_at === null
+            && null === $paymentData->expired_at
             // Check that payment is either correctly initiated, or fully paid (p1x fallback)
-            && in_array($paymentData->state, [AlmaPayment::STATE_IN_PROGRESS, AlmaPayment::STATE_PAID], true)
+            && \in_array($paymentData->state, [AlmaPayment::STATE_IN_PROGRESS, AlmaPayment::STATE_PAID], true)
             // Extra-check that first installment has indeed been paid
-            && $paymentData->payment_plan[0]->state === Instalment::STATE_PAID;
+            && Instalment::STATE_PAID === $paymentData->payment_plan[0]->state;
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Payum\Extension;
 
-
 use Alma\API\Entities\Payment;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
+use Exception;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Extension\Context;
 use Payum\Core\Extension\ExtensionInterface;
@@ -39,7 +39,7 @@ class RefundFailedPaymentExtension implements ExtensionInterface
     public function __construct(
         AlmaBridgeInterface $api,
         LoggerInterface $logger,
-        RequestStack $requestStack
+        RequestStack $requestStack,
     ) {
         $this->api = $api;
         $this->logger = $logger;
@@ -54,7 +54,7 @@ class RefundFailedPaymentExtension implements ExtensionInterface
         // Avoid duplicate flashes
         /** @var array|string $flash */
         foreach ($flashBag->peek($type) as $flash) {
-            if (is_array($flash) && array_key_exists('message', $flash) && $flash['message'] === $message) {
+            if (\is_array($flash) && \array_key_exists('message', $flash) && $flash['message'] === $message) {
                 return;
             }
         }
@@ -63,13 +63,13 @@ class RefundFailedPaymentExtension implements ExtensionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function onPostExecute(Context $context): void
     {
         $request = $context->getRequest();
 
-        if ($request instanceof GetStatusInterface === false) {
+        if (false === $request instanceof GetStatusInterface) {
             return;
         }
 
@@ -79,7 +79,7 @@ class RefundFailedPaymentExtension implements ExtensionInterface
 
         /** @var Payment|array|null $paymentData */
         $paymentData = $details->get(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_DATA);
-        if (is_array($paymentData)) {
+        if (\is_array($paymentData)) {
             $paymentData = new Payment($paymentData);
         }
 
@@ -88,11 +88,11 @@ class RefundFailedPaymentExtension implements ExtensionInterface
         // of which associated Alma payment is in paid/ongoing state (otherwise it means it's been cancelled/expired,
         // or it's long past validation time and this could be a fraudulent refund attempt)
         if (
-            !in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
-            || $details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID) !== false
-            || $details->get(AlmaBridgeInterface::DETAILS_KEY_ERROR_TRIGGERED_REFUND) === true
-            || ($paymentData !== null
-                && !in_array($paymentData->state, [Payment::STATE_PAID, Payment::STATE_IN_PROGRESS], true))
+            !\in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
+            || false !== $details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)
+            || true === $details->get(AlmaBridgeInterface::DETAILS_KEY_ERROR_TRIGGERED_REFUND)
+            || (null !== $paymentData
+                && !\in_array($paymentData->state, [Payment::STATE_PAID, Payment::STATE_IN_PROGRESS], true))
         ) {
             return;
         }
@@ -111,7 +111,7 @@ class RefundFailedPaymentExtension implements ExtensionInterface
 
             $details[AlmaBridgeInterface::DETAILS_KEY_ERROR_TRIGGERED_REFUND] = true;
             $payment->setDetails($details->getArrayCopy());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("[Alma] Refund error for failed Payment $pid (Alma: $almaPid): " . $e->getMessage());
 
             $this->addFlash(
@@ -123,18 +123,16 @@ class RefundFailedPaymentExtension implements ExtensionInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function onPreExecute(Context $context): void
     {
-
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function onExecute(Context $context): void
     {
-
     }
 }

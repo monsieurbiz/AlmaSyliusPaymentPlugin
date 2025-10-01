@@ -7,9 +7,6 @@ namespace Alma\SyliusPaymentPlugin\Payum\Action;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilder;
-use Alma\SyliusPaymentPlugin\ValueObject\Customer;
-use Alma\SyliusPaymentPlugin\ValueObject\Payment;
-use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
@@ -34,7 +31,7 @@ final class ConvertPaymentAction implements ActionInterface, ApiAwareInterface, 
     /**
      * @var GenericTokenFactoryInterface|null
      */
-    protected $tokenFactory = null;
+    protected $tokenFactory;
     /**
      * @var PaymentDataBuilder
      */
@@ -68,7 +65,7 @@ final class ConvertPaymentAction implements ActionInterface, ApiAwareInterface, 
                     'installments_count' => $config->getInstallmentsCount(),
                     'return_url' => $request->getToken()->getAfterUrl(),
                     'ipn_callback_url' => $notifyToken->getTargetUrl(),
-                    'customer_cancel_url' => $request->getToken()->getAfterUrl()
+                    'customer_cancel_url' => $request->getToken()->getAfterUrl(),
                 ]);
 
                 return $data;
@@ -81,8 +78,8 @@ final class ConvertPaymentAction implements ActionInterface, ApiAwareInterface, 
     public function supports($request): bool
     {
         return
-            $request instanceof Convert &&
-            $request->getSource() instanceof PaymentInterface &&
-            $request->getTo() === 'array';
+            $request instanceof Convert
+            && $request->getSource() instanceof PaymentInterface
+            && 'array' === $request->getTo();
     }
 }

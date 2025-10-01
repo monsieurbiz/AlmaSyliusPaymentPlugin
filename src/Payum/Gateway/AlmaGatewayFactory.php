@@ -10,7 +10,7 @@ use Payum\Core\GatewayFactory;
 
 final class AlmaGatewayFactory extends GatewayFactory
 {
-    const FACTORY_NAME = 'alma_payments';
+    public const FACTORY_NAME = 'alma_payments';
 
     protected function populateConfig(ArrayObject $config): void
     {

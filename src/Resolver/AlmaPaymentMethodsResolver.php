@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Resolver;
 
-
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\AlmaGatewayFactory;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfig;
@@ -32,14 +31,14 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
 
     public function __construct(
         PaymentMethodRepositoryInterface $paymentMethodRepository,
-        AlmaBridgeInterface $almaBridge
+        AlmaBridgeInterface $almaBridge,
     ) {
         $this->methodsRepository = $paymentMethodRepository;
         $this->almaBridge = $almaBridge;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getSupportedMethods(BasePaymentInterface $subject): array
     {
@@ -59,14 +58,14 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
             $gatewayConfig = $method->getGatewayConfig();
 
             // Don't mess with non-Alma payment methods
-            if (!$gatewayConfig || $this->getGatewayFactoryName($gatewayConfig) !== AlmaGatewayFactory::FACTORY_NAME) {
+            if (!$gatewayConfig || AlmaGatewayFactory::FACTORY_NAME !== $this->getGatewayFactoryName($gatewayConfig)) {
                 $supportedMethods[] = $method;
 
                 continue;
             }
 
             // If we're not dealing with an allowed currency, skip all Alma methods
-            if (!in_array($subject->getCurrencyCode(), AlmaGatewayConfigInterface::ALLOWED_CURRENCY_CODES, true)) {
+            if (!\in_array($subject->getCurrencyCode(), AlmaGatewayConfigInterface::ALLOWED_CURRENCY_CODES, true)) {
                 continue;
             }
 
@@ -126,7 +125,7 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
                         function (array $memo, PaymentMethodInterface $m): array {
                             // PHP automatically coerces int-looking indices to int, and array_merge doesn't preserve
                             // int keys, so we need an actual string key to make things work.
-                            $memo["method:" . $m->getId()] = $m;
+                            $memo['method:' . $m->getId()] = $m;
 
                             return $memo;
                         }, []
@@ -141,8 +140,8 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
                 return $m;
             }
 
-            $methodKey = "method:" . $m;
-            if (array_key_exists($methodKey, $methodsToAdd)) {
+            $methodKey = 'method:' . $m;
+            if (\array_key_exists($methodKey, $methodsToAdd)) {
                 return $methodsToAdd[$methodKey];
             }
 
@@ -155,8 +154,8 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
     public function supports(BasePaymentInterface $subject): bool
     {
         return $subject instanceof PaymentInterface
-            && $subject->getOrder() !== null
-            && $subject->getOrder()->getChannel() !== null;
+            && null !== $subject->getOrder()
+            && null !== $subject->getOrder()->getChannel();
     }
 
     private function getGatewayFactoryName(GatewayConfigInterface $gatewayConfig): ?string
@@ -165,12 +164,12 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
 
         // GatewayConfigInterface::getFactoryName is deprecated and the recommended method is to set the factory name on
         // the `payum.factory_name` directly into the gateway's config
-        if (array_key_exists('payum.factory_name', $config)) {
-            return strval($config['payum.factory_name']);
+        if (\array_key_exists('payum.factory_name', $config)) {
+            return (string) $config['payum.factory_name'];
         }
 
         // Fallback, just in case!
-        if (is_callable([$gatewayConfig, 'getFactoryName'])) {
+        if (\is_callable([$gatewayConfig, 'getFactoryName'])) {
             return $gatewayConfig->getFactoryName();
         }
 
@@ -181,6 +180,7 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
     {
         /** @var GatewayConfigInterface $gatewayConfig */
         $gatewayConfig = $method->getGatewayConfig();
+
         return ArrayObject::ensureArrayObject($gatewayConfig->getConfig());
     }
 

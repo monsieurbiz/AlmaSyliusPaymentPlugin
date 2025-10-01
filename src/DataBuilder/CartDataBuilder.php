@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\DataBuilder;
 
-
 use Alma\SyliusPaymentPlugin\Utils\Utils;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Sylius\Component\Core\Model\ImageInterface;
@@ -16,6 +15,7 @@ use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Model\PromotionInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
+use Sylius\Component\Resource\Model\TranslatableInterface;
 use Sylius\Component\Taxation\Resolver\TaxRateResolverInterface;
 use Sylius\Component\Taxonomy\Model\TaxonTranslationInterface;
 use Symfony\Component\Routing\Router;
@@ -24,27 +24,11 @@ use Webmozart\Assert\Assert;
 
 class CartDataBuilder implements DataBuilderInterface
 {
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-    /**
-     * @var CacheManager
-     */
-    private $liipCacheManager;
-    /**
-     * @var TaxRateResolverInterface
-     */
-    private $taxRateResolver;
-
     public function __construct(
-        RouterInterface $router,
-        CacheManager $liipCacheManager,
-        TaxRateResolverInterface $taxRateResolver
+        private RouterInterface $router,
+        private CacheManager $liipCacheManager,
+        private TaxRateResolverInterface $taxRateResolver,
     ) {
-        $this->router = $router;
-        $this->liipCacheManager = $liipCacheManager;
-        $this->taxRateResolver = $taxRateResolver;
     }
 
     public function __invoke(array $data, PaymentInterface $payment): array
@@ -54,7 +38,7 @@ class CartDataBuilder implements DataBuilderInterface
 
         $data['payment']['cart'] = [
             'items' => $this->getItems($order),
-            'discounts' => $this->getDiscounts($order)
+            'discounts' => $this->getDiscounts($order),
         ];
 
         return $data;
@@ -66,16 +50,20 @@ class CartDataBuilder implements DataBuilderInterface
 
         return array_filter(array_map(function (OrderItemInterface $item) {
             $product = $item->getProduct();
-            if (!$product) {
+            if (null === $product) {
                 return null;
             }
 
+            $variant = $item->getVariant();
+            if (null === $variant) {
+                return null;
+            }
+
+            /** @var ProductInterface&TranslatableInterface $product */
+            /** @var ProductVariantInterface&TranslatableInterface $variant */
+
             /** @var ProductTranslationInterface $productTrans */
             $productTrans = Utils::getTranslationImpl($product);
-
-            // If this product has no variant, use the product directly
-            /** @var ProductVariantInterface $variant */
-            $variant = $item->getVariant();
 
             /** @var ProductTranslationInterface $variantTrans */
             $variantTrans = Utils::getTranslationImpl($variant);
@@ -88,7 +76,7 @@ class CartDataBuilder implements DataBuilderInterface
                 'quantity' => $item->getQuantity(),
                 'unit_price' => $item->getDiscountedUnitPrice(),
                 'line_price' => $item->getTotal(),
-                'is_gift' => $item->getTotal() === 0,
+                'is_gift' => 0 === $item->getTotal(),
                 'categories' => $this->getCategories($product),
                 'url' => $this->getProductUrl($product),
                 'picture_url' => $this->getProductPictureUrl($variant),
@@ -99,9 +87,8 @@ class CartDataBuilder implements DataBuilderInterface
     }
 
     /**
-     * Return a list of all "taxons" a product is associated to, in the shape ['Root > Parent > ... > Taxon', ...]
+     * Return a list of all "taxons" a product is associated to, in the shape ['Root > Parent > ... > Taxon', ...].
      *
-     * @param ProductInterface $product
      * @return string[]
      */
     private function getCategories(ProductInterface $product): array
@@ -111,7 +98,7 @@ class CartDataBuilder implements DataBuilderInterface
         return array_map(function (TaxonInterface $taxon) {
             // Keep all taxons but the root one, then sort by taxon level
             $ancestors = array_filter(Utils::getCollectionValues($taxon->getAncestors()), function (TaxonInterface $t) {
-                return $t->getParent() !== null;
+                return null !== $t->getParent();
             });
 
             usort($ancestors, function (TaxonInterface $a, TaxonInterface $b): int {
@@ -122,8 +109,7 @@ class CartDataBuilder implements DataBuilderInterface
                 return ($a->getLevel() < $b->getLevel()) ? -1 : 1;
             });
 
-
-            return implode(' > ', array_map(function (TaxonInterface $taxon) {
+            return implode(' > ', array_map(function (TaxonInterface&TranslatableInterface $taxon) {
                 /** @var TaxonTranslationInterface $trans */
                 $trans = Utils::getTranslationImpl($taxon);
 
@@ -132,7 +118,7 @@ class CartDataBuilder implements DataBuilderInterface
         }, $taxons);
     }
 
-    private function getProductUrl(ProductInterface $product): string
+    private function getProductUrl(ProductInterface&TranslatableInterface $product): string
     {
         /** @var ProductTranslationInterface $trans */
         $trans = Utils::getTranslationImpl($product);
@@ -158,14 +144,14 @@ class CartDataBuilder implements DataBuilderInterface
         /** @var ImageInterface[] $images */
         $images = $subject->getImages();
 
-        if (!empty($mainPictures) && $mainPictures[0] !== null ) {
+        if (!empty($mainPictures) && null !== $mainPictures[0]) {
             $path = $mainPictures[0]->getPath();
-        } elseif (!empty($images) && $images[0] !== null) {
+        } elseif (!empty($images) && null !== $images[0]) {
             $path = $images[0]->getPath();
         }
 
-        $url = "https://placehold.it/200x200";
-        if ($path !== null) {
+        $url = 'https://placehold.co/200x200';
+        if (null !== $path) {
             $url = $this->liipCacheManager->getBrowserPath($path, 'sylius_shop_product_large_thumbnail');
         }
 
@@ -175,7 +161,7 @@ class CartDataBuilder implements DataBuilderInterface
     private function isTaxIncluded(ProductVariantInterface $variant): bool
     {
         $taxRate = $this->taxRateResolver->resolve($variant);
-        if ($taxRate === null) {
+        if (null === $taxRate) {
             return false;
         }
 
@@ -187,27 +173,28 @@ class CartDataBuilder implements DataBuilderInterface
         /** @var PromotionInterface[] $promotions */
         $promotions = Utils::getCollectionValues($order->getPromotions());
 
-        if (count($promotions) === 0) {
+        if (0 === \count($promotions)) {
             return [];
-        } elseif (count($promotions) === 1) {
+        }
+        if (1 === \count($promotions)) {
             return [
                 [
                     'title' => $promotions[0]->getName(),
-                    'amount' => $order->getOrderPromotionTotal()
-                ]
+                    'amount' => $order->getOrderPromotionTotal(),
+                ],
             ];
         }
 
         $allPromos = array_map(function (PromotionInterface $promotion) {
             return [
-                'title' => $promotion->getName() . " (montant inconnu)",
-                'amount' => 0
+                'title' => $promotion->getName() . ' (montant inconnu)',
+                'amount' => 0,
             ];
         }, $promotions);
 
         $allPromos[] = [
             'title' => 'Total',
-            'amount' => $order->getOrderPromotionTotal()
+            'amount' => $order->getOrderPromotionTotal(),
         ];
 
         return $allPromos;

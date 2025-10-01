@@ -6,7 +6,6 @@ namespace Alma\SyliusPaymentPlugin\Payum\Action;
 
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
-use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfigInterface;
 use Alma\SyliusPaymentPlugin\Payum\Request\RenderInPagePayment;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
@@ -20,8 +19,8 @@ use Payum\Core\Request\RenderTemplate;
 
 final class RenderInPagePaymentAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
 {
-    use GatewayAwareTrait;
     use ApiAwareTrait;
+    use GatewayAwareTrait;
 
     /**
      * @var AlmaBridgeInterface
@@ -58,7 +57,7 @@ final class RenderInPagePaymentAction implements ActionInterface, ApiAwareInterf
     public function supports($request): bool
     {
         return
-            $request instanceof RenderInPagePayment &&
-            $request->getModel() instanceof ArrayObject;
+            $request instanceof RenderInPagePayment
+            && $request->getModel() instanceof ArrayObject;
     }
 }

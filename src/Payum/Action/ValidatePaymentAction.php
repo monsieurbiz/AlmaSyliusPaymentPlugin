@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Payum\Action;
 
-
 use Alma\API\Entities\Payment;
 use Alma\API\RequestError;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
@@ -15,7 +14,6 @@ use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Sylius\Component\Core\Model\PaymentInterface;
-
 
 final class ValidatePaymentAction implements ActionInterface, ApiAwareInterface
 {
@@ -30,7 +28,8 @@ final class ValidatePaymentAction implements ActionInterface, ApiAwareInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
      * @throws RequestError
      */
     public function execute($request): void
@@ -56,7 +55,7 @@ final class ValidatePaymentAction implements ActionInterface, ApiAwareInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function supports($request): bool
     {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Payum\Request;
 
-
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Payum\Core\Request\Generic;
 use Sylius\Component\Core\Model\PaymentInterface;

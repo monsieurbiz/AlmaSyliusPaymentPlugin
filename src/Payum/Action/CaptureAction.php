@@ -21,8 +21,8 @@ use RuntimeException;
 
 final class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
 {
-    use GatewayAwareTrait;
     use ApiAwareTrait;
+    use GatewayAwareTrait;
 
     /**
      * @var AlmaBridgeInterface
@@ -48,22 +48,18 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
             case GatewayConfigInterface::PAYMENT_PAGE_MODE_IN_PAGE:
                 $this->gateway->execute(new RenderInPagePayment($request->getModel()));
                 break;
-
             case GatewayConfigInterface::PAYMENT_PAGE_MODE_REDIRECT:
                 $this->gateway->execute(new RedirectToPaymentPage($request));
                 break;
-
             default:
-                throw new RuntimeException(
-                    "[Alma] Unknown payment page mode '${paymentPageMode}'. Check gateway config"
-                );
+                throw new RuntimeException(\sprintf('[Alma] Unknown payment page mode "%s". Check gateway config', $paymentPageMode));
         }
     }
 
     public function supports($request): bool
     {
         return
-            $request instanceof Capture &&
-            $request->getModel() instanceof ArrayObject;
+            $request instanceof Capture
+            && $request->getModel() instanceof ArrayObject;
     }
 }

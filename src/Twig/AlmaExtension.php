@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Alma\SyliusPaymentPlugin\Twig;
 
 use Twig\Extension\AbstractExtension;
@@ -19,6 +22,7 @@ class AlmaExtension extends AbstractExtension
 
     /**
      * @param int $number
+     *
      * @return float|int
      */
     public function formatPriceFromCent(int $number)
@@ -28,10 +32,11 @@ class AlmaExtension extends AbstractExtension
 
     /**
      * @param int $number
+     *
      * @return string
      */
     public function formatPercentNumber(int $number): string
     {
-        return sprintf('%s %%', number_format($number / 100, 2, ',', ' '));
+        return \sprintf('%s %%', number_format($number / 100, 2, ',', ' '));
     }
 }

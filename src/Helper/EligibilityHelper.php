@@ -4,43 +4,21 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Helper;
 
-
 use Alma\API\Endpoints\Results\Eligibility;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\DataBuilder\EligibilityDataBuilder;
-use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
 
 final class EligibilityHelper
 {
-    /**
-     * @var AlmaBridgeInterface
-     */
-    private $almaBridge;
-
-    /**
-     * @var EligibilityDataBuilder
-     */
-    private $eligibilityDataBuilder;
-
-    /**
-     * @param AlmaBridgeInterface $almaBridge
-     * @param EligibilityDataBuilder $eligibilityDataBuilder
-     */
     public function __construct(
-        AlmaBridgeInterface $almaBridge,
-        EligibilityDataBuilder $eligibilityDataBuilder
+        private AlmaBridgeInterface $almaBridge,
+        private EligibilityDataBuilder $eligibilityDataBuilder,
     ) {
-        $this->almaBridge = $almaBridge;
-        $this->eligibilityDataBuilder = $eligibilityDataBuilder;
     }
 
     /**
-     * @param int $amount
-     * @param int $installmentCounts
-     * @param string $billingCountryCode
-     * @param string $shippingCountryCode
-     * @param string $locale
      * @return Eligibility|Eligibility[]|array
      */
     public function getEligibilities(
@@ -48,9 +26,8 @@ final class EligibilityHelper
         int $installmentCounts,
         string $billingCountryCode,
         string $shippingCountryCode,
-        string $locale
-    )
-    {
+        string $locale,
+    ) {
         $data = $this->eligibilityDataBuilder;
 
         return $this->almaBridge->retrieveEligibilities(

@@ -21,7 +21,6 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Sylius\Component\Core\Model\PaymentInterface;
 
-
 final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface, LoggerAwareInterface
 {
     use ApiAwareTrait;
@@ -67,13 +66,13 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
         }
 
         // Make sure the payment's details include the Alma payment ID
-        $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = (string)$query[AlmaBridgeInterface::QUERY_PARAM_PID];
+        $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = (string) $query[AlmaBridgeInterface::QUERY_PARAM_PID];
         $payment->setDetails($details->getArrayCopy());
 
         // If payment hasn't been validated yet, validate its status against Alma's payment state
         if (
             !$details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)
-            && in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
+            && \in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
         ) {
             try {
                 $this->gateway->execute(new ValidatePayment($payment));
@@ -91,10 +90,10 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
         $isValid = $details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID);
 
         // Explicitly compare to true/false, as a null value (i.e. no IS_VALID_KEY in $details) means unknown state
-        if ($isValid === true) {
+        if (true === $isValid) {
             $request->markCaptured();
             $this->cleanPayload($payment);
-        } elseif ($isValid === false) {
+        } elseif (false === $isValid) {
             $request->markFailed();
             $this->cleanPayload($payment);
         }
@@ -116,7 +115,7 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
     public function supports($request): bool
     {
         return
-            $request instanceof GetStatusInterface &&
-            $request->getModel() instanceof PaymentInterface;
+            $request instanceof GetStatusInterface
+            && $request->getModel() instanceof PaymentInterface;
     }
 }

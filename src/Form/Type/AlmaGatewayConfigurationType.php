@@ -17,39 +17,20 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
-
 
 final class AlmaGatewayConfigurationType extends AbstractType
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /**
-     * @var AlmaBridgeInterface
-     */
-    private $almaBridge;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     /**
      * @var array<string, string>
      */
     private $errors;
 
     public function __construct(
-        TranslatorInterface $translator,
-        AlmaBridgeInterface $almaBridge,
-        LoggerInterface $logger
+        private TranslatorInterface $translator,
+        private AlmaBridgeInterface $almaBridge,
+        private LoggerInterface $logger,
     ) {
-        $this->translator = $translator;
-        $this->almaBridge = $almaBridge;
-        $this->logger = $logger;
-
         $this->errors = [];
     }
 
@@ -112,12 +93,14 @@ final class AlmaGatewayConfigurationType extends AbstractType
                     'label' => $this->translator->trans('alma_sylius_payment_plugin.config.payment_page_mode_label'),
                 ]
             )
-            ->add(GatewayConfigInterface::CONFIG_MERCHANT_ID, HiddenType::class);
+            ->add(GatewayConfigInterface::CONFIG_MERCHANT_ID, HiddenType::class)
+        ;
 
         $builder
             ->addEventListener(FormEvents::PRE_SUBMIT, [$this, 'onPreSubmit'])
             ->addEventListener(FormEvents::POST_SUBMIT, [$this, 'onPostSubmit'])
-            ->addEventListener(FormEvents::PRE_SET_DATA, [$this, 'onPreSetData']);
+            ->addEventListener(FormEvents::PRE_SET_DATA, [$this, 'onPreSetData'])
+        ;
     }
 
     public function onPreSetData(FormEvent $event): void
@@ -128,7 +111,7 @@ final class AlmaGatewayConfigurationType extends AbstractType
         $data->defaults([
             GatewayConfigInterface::CONFIG_INSTALLMENTS_COUNT => 3,
             GatewayConfigInterface::CONFIG_PAYMENT_PAGE_MODE => GatewayConfigInterface::PAYMENT_PAGE_MODE_IN_PAGE,
-            GatewayConfigInterface::CONFIG_API_MODE => AlmaClient::TEST_MODE
+            GatewayConfigInterface::CONFIG_API_MODE => AlmaClient::TEST_MODE,
         ]);
 
         $event->setData($data->getArrayCopy());
@@ -140,16 +123,16 @@ final class AlmaGatewayConfigurationType extends AbstractType
         $data = ArrayObject::ensureArrayObject($event->getData());
 
         // Only check the API key for the mode that's been activated by the merchant
-        $apiKeyConfigKey = $data[GatewayConfigInterface::CONFIG_API_MODE] === AlmaClient::LIVE_MODE
+        $apiKeyConfigKey = AlmaClient::LIVE_MODE === $data[GatewayConfigInterface::CONFIG_API_MODE]
             ? GatewayConfigInterface::CONFIG_LIVE_API_KEY
             : GatewayConfigInterface::CONFIG_TEST_API_KEY;
 
         /** @var string $apiKey */
-        $apiKey = $data[GatewayConfigInterface::CONFIG_API_MODE] === AlmaClient::LIVE_MODE
+        $apiKey = AlmaClient::LIVE_MODE === $data[GatewayConfigInterface::CONFIG_API_MODE]
             ? $data[GatewayConfigInterface::CONFIG_LIVE_API_KEY]
-            : $data[GatewayConfigInterface::CONFIG_TEST_API_KEY];;
+            : $data[GatewayConfigInterface::CONFIG_TEST_API_KEY];
 
-        if ($apiKey == null || trim($apiKey) == "") {
+        if (null == $apiKey || '' == trim($apiKey)) {
             $this->errors[$apiKeyConfigKey] = 'alma_sylius_payment_plugin.errors.empty_api_key';
 
             return;
@@ -158,7 +141,7 @@ final class AlmaGatewayConfigurationType extends AbstractType
         // At this point we know $data contains an API key we can try to connect with
         $this->almaBridge->initialize($data);
         $merchant = $this->almaBridge->getMerchantInfo();
-        if ($merchant === null) {
+        if (null === $merchant) {
             $this->errors[$apiKeyConfigKey] = 'alma_sylius_payment_plugin.errors.invalid_api_key';
         } else {
             $data[GatewayConfigInterface::CONFIG_MERCHANT_ID] = $merchant->id;
