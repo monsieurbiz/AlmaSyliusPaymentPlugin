@@ -32,7 +32,7 @@ services:
     class: Alma\SyliusPaymentPlugin\DataBuilder\ShippingInfoDataBuilder
     arguments:
       $calculators: '@sylius.registry.shipping_calculator'
-      $methodsResolver: '@sylius.shipping_methods_resolver'
+      $methodsResolver: '@sylius.resolver.shipping_methods'
     tags:
       - name: alma_sylius_payment_plugin.payment_data_builder
         id: shipping_info
@@ -42,7 +42,7 @@ services:
     arguments:
       $router: '@router'
       $liipCacheManager: '@liip_imagine.cache.manager'
-      $taxRateResolver: '@sylius.tax_rate_resolver'
+      $taxRateResolver: '@sylius.resolver.tax_rate'
     tags:
       - name: alma_sylius_payment_plugin.payment_data_builder
         id: cart

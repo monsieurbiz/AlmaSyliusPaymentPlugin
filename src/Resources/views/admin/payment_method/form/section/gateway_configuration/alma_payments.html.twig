@@ -1,0 +1,25 @@
+{% set form = hookable_metadata.context.form.gatewayConfig.config %}
+
+<div class="col-12 col-md-6">
+    {{ form_row(form.live_api_key) }}
+</div>
+
+<div class="col-12 col-md-6">
+    {{ form_row(form.test_api_key) }}
+</div>
+
+<div class="col-12 col-md-6">
+    {{ form_row(form.api_mode) }}
+</div>
+
+<div class="col-12 col-md-6">
+    {{ form_row(form.installments_count) }}
+</div>
+
+<div class="col-12 col-md-6">
+    {{ form_row(form.payment_page_mode) }}
+</div>
+
+<div class="col-12 col-md-6">
+    {{ form_row(form.merchant_id) }}
+</div>

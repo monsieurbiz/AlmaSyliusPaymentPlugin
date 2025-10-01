@@ -81,6 +81,7 @@ final class InstallmentsController
             $installmentsCount = $paymentMethod->getGatewayConfig()->getConfig()["installments_count"];
             $totalCart = $order->getTotal();
 
+            $this->eligibilityHelper->initializeConfig($paymentMethod);
             $eligibilities = $this->eligibilityHelper->getEligibilities(
                 $totalCart,
                 $installmentsCount,

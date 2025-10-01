@@ -1,7 +1,7 @@
-services:
-  app.block_event_listener.layout.after_javascripts:
-    class: Sylius\Bundle\UiBundle\Block\BlockEventListener
-    arguments:
-      - '@@AlmaSyliusPaymentPlugin/_partials/_javascript.html.twig'
-    tags:
-      - { name: kernel.event_listener, event: sonata.block.event.sylius.shop.layout.javascripts, method: onBlockEvent }
+# services:
+#   app.block_event_listener.layout.after_javascripts:
+#     class: Sylius\Bundle\UiBundle\Block\BlockEventListener
+#     arguments:
+#       - '@@AlmaSyliusPaymentPlugin/_partials/_javascript.html.twig'
+#     tags:
+#       - { name: kernel.event_listener, event: sonata.block.event.sylius.shop.layout.javascripts, method: onBlockEvent }

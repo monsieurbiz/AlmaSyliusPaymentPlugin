@@ -8,6 +8,8 @@ namespace Alma\SyliusPaymentPlugin\Helper;
 use Alma\API\Endpoints\Results\Eligibility;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\DataBuilder\EligibilityDataBuilder;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Payum\Core\Bridge\Spl\ArrayObject;
 
 final class EligibilityHelper
 {
@@ -60,5 +62,13 @@ final class EligibilityHelper
                 $locale
             )
         );
+    }
+
+    public function initializeConfig(PaymentMethodInterface $method): void
+    {
+        /** @var GatewayConfigInterface $gatewayConfig */
+        $gatewayConfig = $method->getGatewayConfig();
+        $config = ArrayObject::ensureArrayObject($gatewayConfig->getConfig());
+        $this->almaBridge->initialize($config);
     }
 }

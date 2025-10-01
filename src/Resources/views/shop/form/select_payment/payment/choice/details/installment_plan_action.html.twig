@@ -1,0 +1,4 @@
+{% set method = hookable_metadata.context.method %}
+{% set order = hookable_metadata.context.order %}
+
+{{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentsController::renderInstallmentPlanAction', {'orderId': order.id, 'methodPaymentId': method.id})) }}
