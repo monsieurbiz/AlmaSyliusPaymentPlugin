@@ -1,7 +1,7 @@
 {
   "name": "alma/sylius-payment-plugin",
   "type": "sylius-plugin",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "keywords": [
     "alma",
     "buy now pay later",
@@ -14,9 +14,9 @@
   "description": "Payment plugin to integrate Alma installments and pay later payments with your Sylius shop",
   "license": "MIT",
   "require": {
-    "php":  "~7.3 || ~7.4 || ~8.0 || ~8.1 || ~8.2",
-    "alma/alma-php-client": ">=1.11.2",
-    "sylius/sylius": ">=v1.9.0",
+    "php":  "^8.2",
+    "alma/alma-php-client": "~2.6",
+    "sylius/sylius": "~2.1",
     "ext-json": "*"
   },
   "require-dev": {
