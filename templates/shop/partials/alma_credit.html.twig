@@ -2,8 +2,6 @@
 {% set nextAmount = plans.paymentPlan[1].total_amount %}
 
 <div class="alma-installment-plan-details">
-    <p class="text-muted">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
-
     <h6 class="mb-3">{{ 'alma_sylius_payment_plugin.checkout.installment_one_line'|trans({
         '%firstAmount%': firstAmount|alma_price_from_cent|format_currency('EUR'),
         '%installment%': installmentsCount - 1,

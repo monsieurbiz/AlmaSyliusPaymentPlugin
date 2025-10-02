@@ -18,7 +18,6 @@ alma_sylius_payment_plugin:
     test_mode: Prueba
   checkout:
     logo_alma: Logo Alma
-    fast_and_secure_payment_by_credit_card: Pago rápido y seguro con tarjeta de crédito
     today: Hoy
     installment_one_line: '%firstAmount% hoy entonces %installment% x %nextAmount%'
     your_credit: Su crédito

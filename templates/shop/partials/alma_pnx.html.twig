@@ -1,6 +1,4 @@
 <div class="alma-installment-plan-details">
-    <p class="text-muted">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
-
     {% for count, plan in plans.paymentPlan %}
         {% set total_amount = plan.total_amount / 100 %}
         <div class="row align-items-center g-0 py-3">
