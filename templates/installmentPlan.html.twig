@@ -1,7 +1,0 @@
-<div class="alma">
-    {% if installmentsCount <= 4 %}
-        {% include '@AlmaSyliusPaymentPlugin/shop/_partials/_almaPnx.html.twig' with {'installmentsCount': installmentsCount, 'plans': plans} %}
-    {% else %}
-        {% include '@AlmaSyliusPaymentPlugin/shop/_partials/_almaCredit.html.twig' with {'installmentsCount': installmentsCount, 'plans': plans, 'creditInfo': creditInfo} %}
-    {% endif %}
-</div>

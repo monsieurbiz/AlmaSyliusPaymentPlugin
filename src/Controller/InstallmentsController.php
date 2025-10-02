@@ -68,7 +68,7 @@ final class InstallmentsController
                 throw new Exception('Fee plan cannot be found.');
             }
 
-            return new Response($this->twig->render('@AlmaSyliusPaymentPlugin/installmentPlan.html.twig', [
+            return new Response($this->twig->render('@AlmaSyliusPaymentPlugin/shop/installment_plan.html.twig', [
                 'plans' => $plan,
                 'installmentsCount' => $installmentsCount,
                 'creditInfo' => [

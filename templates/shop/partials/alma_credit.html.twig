@@ -1,0 +1,35 @@
+{% set firstAmount = plans.paymentPlan[0].total_amount %}
+{% set nextAmount = plans.paymentPlan[1].total_amount %}
+
+<div class="d-none alma-installment-plan-details">
+    <p class="text-muted">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
+
+    <h6 class="mb-3">{{ 'alma_sylius_payment_plugin.checkout.installment_one_line'|trans({
+        '%firstAmount%': firstAmount|alma_price_from_cent|format_currency('EUR'),
+        '%installment%': installmentsCount - 1,
+        '%nextAmount%': nextAmount|alma_price_from_cent|format_currency('EUR')
+    }) }}</h6>
+
+    <h6 class="mb-3">{{ 'alma_sylius_payment_plugin.checkout.your_credit'|trans }}</h6>
+
+    <div class="card">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+                <span>{{ 'alma_sylius_payment_plugin.checkout.cart_total'|trans }}</span>
+                <span>{{ creditInfo.totalCart|alma_price_from_cent|format_currency('EUR') }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <span>{{ 'alma_sylius_payment_plugin.checkout.cost_of_credit'|trans }}</span>
+                <span>{{ creditInfo.costCredit|alma_price_from_cent|format_currency('EUR') }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <span>{{ 'alma_sylius_payment_plugin.checkout.fixed_apr'|trans }}</span>
+                <span>{{ creditInfo.taeg|alma_format_percent_number }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between fw-bold">
+                <span>{{ 'alma_sylius_payment_plugin.checkout.total'|trans }}</span>
+                <span>{{ creditInfo.totalCredit|alma_price_from_cent|format_currency('EUR') }}</span>
+            </li>
+        </ul>
+    </div>
+</div>
