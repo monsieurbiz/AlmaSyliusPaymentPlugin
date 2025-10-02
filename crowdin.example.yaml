@@ -6,8 +6,8 @@
 
 files:
   -
-    source: Resources/translations/messages.en.yml
-    translation: Resources/translations/messages.%two_letters_code%.yml
+    source: translations/messages.en.yml
+    translation: translations/messages.%two_letters_code%.yml
   -
-    source: Resources/translations/flashes.en.yml
-    translation: Resources/translations/flashes.%two_letters_code%.yml
+    source: translations/flashes.en.yml
+    translation: translations/flashes.%two_letters_code%.yml

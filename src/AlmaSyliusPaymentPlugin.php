@@ -12,7 +12,13 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 final class AlmaSyliusPaymentPlugin extends Bundle
 {
     use SyliusPluginTrait;
-    public const VERSION = '2.1.0';
+
+    public const VERSION = '3.0.0';
+
+    public function getPath(): string
+    {
+        return \dirname(__DIR__);
+    }
 
     public function build(ContainerBuilder $container): void
     {

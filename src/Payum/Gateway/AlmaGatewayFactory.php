@@ -19,7 +19,7 @@ final class AlmaGatewayFactory extends GatewayFactory
             'payum.factory_title' => 'Alma Payments',
             GatewayConfigInterface::CONFIG_INSTALLMENTS_COUNT => 3,
             GatewayConfigInterface::CONFIG_PAYMENT_PAGE_MODE => GatewayConfigInterface::PAYMENT_PAGE_MODE_IN_PAGE,
-            GatewayConfigInterface::CONFIG_PAYMENT_FORM_TEMPLATE => '@AlmaSyliusPaymentPlugin/Action/payment_form.html.twig',
+            GatewayConfigInterface::CONFIG_PAYMENT_FORM_TEMPLATE => '@AlmaSyliusPaymentPlugin/shop/action/payment_form.html.twig',
         ]);
 
         // Set payum.http_client to our own API client bridge, which will be initialized with the gateway's config and
