@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Alma\SyliusPaymentPlugin\Twig;
 
-use Alma\API\Entities\FeePlan;
 use Alma\SyliusPaymentPlugin\Helper\EligibilityHelper;
-use Sylius\Component\Core\Model\OrderInterface;
+use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
 use Twig\Extension\AbstractExtension;
@@ -47,7 +46,7 @@ class AlmaExtension extends AbstractExtension
         return \sprintf('%s %%', number_format($number / 100, 2, ',', ' '));
     }
 
-    public function getPlanData(OrderInterface $order, PaymentMethodInterface $paymentMethod): ?array
+    public function getPlanData(PaymentInterface $payment, PaymentMethodInterface $paymentMethod): ?array
     {
         $paymentGatewayConfig = $paymentMethod->getGatewayConfig();
         if (null === $paymentGatewayConfig) {
@@ -60,14 +59,14 @@ class AlmaExtension extends AbstractExtension
         }
 
         $installmentsCount = $paymentGatewayConfig->getConfig()['installments_count'] ?? 0;
-        $totalCart = $order->getTotal();
+        $totalCart = $payment->getAmount();
 
         $this->eligibilityHelper->initializeConfig($paymentMethod);
         $eligibilities = $this->eligibilityHelper->getEligibilities(
             $totalCart,
             $installmentsCount,
-            $order->getBillingAddress()?->getCountryCode() ?? '',
-            $order->getShippingAddress()?->getCountryCode() ?? '',
+            $payment->getOrder()?->getBillingAddress()?->getCountryCode() ?? '',
+            $payment->getOrder()?->getShippingAddress()?->getCountryCode() ?? '',
             substr($this->localeContext->getLocaleCode(), 0, 2)
         );
 
