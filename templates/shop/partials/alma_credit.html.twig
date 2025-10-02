@@ -1,7 +1,7 @@
 {% set firstAmount = plans.paymentPlan[0].total_amount %}
 {% set nextAmount = plans.paymentPlan[1].total_amount %}
 
-<div class="d-none alma-installment-plan-details">
+<div class="alma-installment-plan-details">
     <p class="text-muted">{{ 'alma_sylius_payment_plugin.checkout.fast_and_secure_payment_by_credit_card'|trans }}</p>
 
     <h6 class="mb-3">{{ 'alma_sylius_payment_plugin.checkout.installment_one_line'|trans({

@@ -1,10 +1,10 @@
 sylius_twig_hooks:
     hooks:
-        'sylius_shop.checkout#javascripts':
-            alma_payments_javascripts:
-                template: '@AlmaSyliusPaymentPlugin/shop/checkout/javascripts.html.twig'
-                priority: -100
+        'sylius_shop.checkout.select_payment.content.form.select_payment.payment.choice.alma_payments':
+            details:
+                template: '@AlmaSyliusPaymentPlugin/shop/form/select_payment/payment/choice/details.html.twig'
+                priority: 0
         'sylius_shop.checkout.select_payment.content.form.select_payment.payment.choice.alma_payments.details':
             installment_plan_action:
-                template: '@AlmaSyliusPaymentPlugin/shop/form/select_payment/payment/choice/details/installment_plan_action.html.twig'
+                template: '@AlmaSyliusPaymentPlugin/shop/form/select_payment/payment/choice/details/installment_plan.html.twig'
                 priority: -100

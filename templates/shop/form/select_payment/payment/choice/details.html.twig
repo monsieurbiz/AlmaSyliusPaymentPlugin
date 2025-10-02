@@ -1,0 +1,8 @@
+{% set order = hookable_metadata.context.order %}
+{% set method = hookable_metadata.context.method %}
+
+{% set plan_data = alma_get_plan_data(order, method) %}
+
+{% if plan_data %}
+    {{ include('@SyliusShop/shared/form/select_payment/payment/choice/details.html.twig', { plan_data: plan_data }) }}
+{% endif %}

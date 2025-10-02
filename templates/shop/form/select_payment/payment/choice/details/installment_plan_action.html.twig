@@ -1,5 +1,0 @@
-{% set method = hookable_metadata.context.method %}
-{% set order = hookable_metadata.context.order %}
-<div class="alma-payment-installment-plan-{{ method.code }}">
-    {{ render(controller('Alma\\SyliusPaymentPlugin\\Controller\\InstallmentsController::renderInstallmentPlanAction', {'orderId': order.id, 'methodPaymentId': method.id})) }}
-</div>

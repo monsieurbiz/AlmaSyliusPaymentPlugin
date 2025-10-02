@@ -11,5 +11,8 @@ services:
 
   Alma\SyliusPaymentPlugin\Twig\AlmaExtension:
     public: true
+    autowire: true
+    arguments:
+      $eligibilityHelper: '@alma.sylius_payment_plugin.helper.eligibility'
     tags:
       - name: twig.extension
