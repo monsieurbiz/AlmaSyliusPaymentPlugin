@@ -10,31 +10,20 @@ use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfig;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfigInterface as AlmaGatewayConfigInterface;
 use InvalidArgumentException;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Model\GatewayConfigInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
 use Sylius\Component\Core\Repository\PaymentMethodRepositoryInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 use Sylius\Component\Payment\Model\PaymentInterface as BasePaymentInterface;
 use Sylius\Component\Payment\Resolver\PaymentMethodsResolverInterface;
 
 final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterface
 {
-    /**
-     * @var PaymentMethodRepositoryInterface
-     */
-    private $methodsRepository;
-
-    /**
-     * @var AlmaBridgeInterface
-     */
-    private $almaBridge;
-
     public function __construct(
-        PaymentMethodRepositoryInterface $paymentMethodRepository,
-        AlmaBridgeInterface $almaBridge,
+        private PaymentMethodRepositoryInterface $paymentMethodRepository,
+        private AlmaBridgeInterface $almaBridge,
     ) {
-        $this->methodsRepository = $paymentMethodRepository;
-        $this->almaBridge = $almaBridge;
     }
 
     /**
@@ -47,8 +36,11 @@ final class AlmaPaymentMethodsResolver implements PaymentMethodsResolverInterfac
         }
 
         // Since `supports` returned true, we know for sure getOrder & getChannel aren't returning null
+        /** @var ChannelInterface $channel */
+        $channel = $subject->getOrder()?->getChannel();
+
         /** @var PaymentMethodInterface[] $methods */
-        $methods = $this->methodsRepository->findEnabledForChannel($subject->getOrder()->getChannel());
+        $methods = $this->paymentMethodRepository->findEnabledForChannel($channel);
 
         /** @var PaymentMethodInterface[] $supportedMethods */
         $supportedMethods = [];

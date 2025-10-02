@@ -45,15 +45,20 @@ final class InstallmentsController
                 throw new Exception('Payment method cannot be found.');
             }
 
-            $installmentsCount = $paymentMethod->getGatewayConfig()->getConfig()['installments_count'];
+            $paymentGatewayConfig = $paymentMethod->getGatewayConfig();
+            if (null === $paymentGatewayConfig) {
+                throw new Exception('Payment gateway config cannot be found.');
+            }
+
+            $installmentsCount = $paymentGatewayConfig->getConfig()['installments_count'];
             $totalCart = $order->getTotal();
 
             $this->eligibilityHelper->initializeConfig($paymentMethod);
             $eligibilities = $this->eligibilityHelper->getEligibilities(
                 $totalCart,
                 $installmentsCount,
-                $order->getBillingAddress()->getCountryCode(),
-                $order->getShippingAddress()->getCountryCode(),
+                $order->getBillingAddress()?->getCountryCode() ?? '',
+                $order->getShippingAddress()?->getCountryCode() ?? '',
                 substr($request->getLocale(), 0, 2)
             );
 

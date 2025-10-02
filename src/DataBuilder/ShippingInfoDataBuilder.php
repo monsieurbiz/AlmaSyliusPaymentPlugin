@@ -10,7 +10,6 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Core\Model\ShipmentInterface;
 use Sylius\Component\Core\Model\ShippingMethodInterface;
 use Sylius\Component\Registry\ServiceRegistryInterface;
-use Sylius\Component\Resource\Model\TranslatableInterface;
 use Sylius\Component\Shipping\Calculator\CalculatorInterface;
 use Sylius\Component\Shipping\Model\ShippingMethodInterface as BaseShippingMethodInterface;
 use Sylius\Component\Shipping\Model\ShippingMethodTranslationInterface;
@@ -90,13 +89,13 @@ class ShippingInfoDataBuilder implements DataBuilderInterface
         return $options;
     }
 
-    private function buildShippingOption(ShipmentInterface $shipment, BaseShippingMethodInterface&TranslatableInterface $method): array
+    private function buildShippingOption(ShipmentInterface $shipment, BaseShippingMethodInterface $method): array
     {
         /** @var ShippingMethodTranslationInterface $methodTranslation */
         $methodTranslation = Utils::getTranslationImpl($method);
 
         /** @var CalculatorInterface $calculator */
-        $calculator = $this->calculators->get($method->getCalculator());
+        $calculator = $this->calculators->get((string) $method->getCalculator());
 
         return [
             'amount' => $calculator->calculate($shipment, $method->getConfiguration()),

@@ -66,7 +66,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
                     'message' => $e->getMessage(),
                 ];
 
-                throw new HttpResponse(json_encode($error), Response::HTTP_INTERNAL_SERVER_ERROR, ['content-type' => 'application/json']);
+                throw new HttpResponse((string) json_encode($error), Response::HTTP_INTERNAL_SERVER_ERROR, ['content-type' => 'application/json']);
             }
         }
 
@@ -77,7 +77,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         $details->replace($payment->getDetails());
 
         // Down here means the callback has been correctly handled, regardless of the final payment state
-        throw new HttpResponse(json_encode(['success' => true, 'state' => $payment->getDetails()[AlmaBridgeInterface::DETAILS_KEY_IS_VALID]]), Response::HTTP_OK, ['content-type' => 'application/json']);
+        throw new HttpResponse((string) json_encode(['success' => true, 'state' => $payment->getDetails()[AlmaBridgeInterface::DETAILS_KEY_IS_VALID]]), Response::HTTP_OK, ['content-type' => 'application/json']);
     }
 
     public function supports($request): bool

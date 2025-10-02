@@ -8,7 +8,6 @@ use Alma\API\Client as AlmaClient;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfigInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -29,7 +28,6 @@ final class AlmaGatewayConfigurationType extends AbstractType
     public function __construct(
         private TranslatorInterface $translator,
         private AlmaBridgeInterface $almaBridge,
-        private LoggerInterface $logger,
     ) {
         $this->errors = [];
     }

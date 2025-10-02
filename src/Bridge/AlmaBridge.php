@@ -9,7 +9,7 @@ use Alma\API\Entities\Instalment;
 use Alma\API\Entities\Merchant;
 use Alma\API\Entities\Payment;
 use Alma\API\Entities\Payment as AlmaPayment;
-use Alma\API\Exceptions\RequestException;
+use Alma\API\RequestError;
 use Alma\SyliusPaymentPlugin\AlmaSyliusPaymentPlugin;
 use Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilderInterface;
 use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfig;
@@ -39,36 +39,38 @@ final class AlmaBridge implements AlmaBridgeInterface
 
     public function getDefaultClient(?string $mode = null): Client
     {
+        if (null !== self::$almaClient) {
+            return self::$almaClient;
+        }
+
+        if (null === $this->gatewayConfig) {
+            throw new Exception('AlmaBridge not initialized with gateway config');
+        }
+
         if (null === $mode) {
             $mode = $this->gatewayConfig->getApiMode();
         }
 
-        if (!self::$almaClient) {
-            self::$almaClient = self::createClientInstance(
-                $this->gatewayConfig->getActiveApiKey(),
-                $mode,
-                $this->logger
-            );
-        }
+        self::$almaClient = self::createClientInstance(
+            $this->gatewayConfig->getActiveApiKey(),
+            $mode,
+            $this->logger
+        );
 
         return self::$almaClient;
     }
 
-    public static function createClientInstance(string $apiKey, string $mode, LoggerInterface $logger): ?Client
+    public static function createClientInstance(string $apiKey, string $mode, LoggerInterface $logger): Client
     {
         $alma = null;
 
-        try {
-            $alma = new Client($apiKey, [
-                'mode' => $mode,
-                'logger' => $logger,
-            ]);
+        $alma = new Client($apiKey, [
+            'mode' => $mode,
+            'logger' => $logger,
+        ]);
 
-            $alma->addUserAgentComponent('Sylius', SyliusCoreBundle::VERSION);
-            $alma->addUserAgentComponent('Alma for Sylius', AlmaSyliusPaymentPlugin::VERSION);
-        } catch (Exception $e) {
-            $logger->error('[Alma] Error creating Alma API client: ' . $e->getMessage());
-        }
+        $alma->addUserAgentComponent('Sylius', SyliusCoreBundle::VERSION);
+        $alma->addUserAgentComponent('Alma for Sylius', AlmaSyliusPaymentPlugin::VERSION);
 
         return $alma;
     }
@@ -76,16 +78,13 @@ final class AlmaBridge implements AlmaBridgeInterface
     public function getMerchantInfo(): ?Merchant
     {
         $client = $this->getDefaultClient();
-        if (!$client) {
-            return null;
-        }
 
         /** @var ?Merchant $merchant */
         $merchant = null;
 
         try {
             $merchant = $client->merchants->me();
-        } catch (RequestException $e) {
+        } catch (RequestError $e) {
             $this->logger->error('[Alma] Error fetching merchant info: ' . $e->getMessage());
         }
 
@@ -94,6 +93,10 @@ final class AlmaBridge implements AlmaBridgeInterface
 
     public function getGatewayConfig(): GatewayConfig
     {
+        if (null === $this->gatewayConfig) {
+            throw new Exception('AlmaBridge not initialized with gateway config');
+        }
+
         return $this->gatewayConfig;
     }
 
@@ -111,7 +114,7 @@ final class AlmaBridge implements AlmaBridgeInterface
         $alma = $this->getDefaultClient();
         try {
             return $alma->payments->eligibility($builder([], $payment), true);
-        } catch (RequestException $e) {
+        } catch (RequestError $e) {
             $this->logger->error('[Alma] Eligibility call failed with error: ' . $e->getMessage());
         }
 
@@ -123,7 +126,7 @@ final class AlmaBridge implements AlmaBridgeInterface
         $alma = $this->getDefaultClient();
         try {
             return $alma->payments->eligibility($data, true);
-        } catch (RequestException $e) {
+        } catch (RequestError $e) {
             $this->logger->error('[Alma] Eligibility call failed with error: ' . $e->getMessage());
         }
 
@@ -140,7 +143,7 @@ final class AlmaBridge implements AlmaBridgeInterface
 
         try {
             $paymentData = $this->getDefaultClient()->payments->fetch($almaPaymentId);
-        } catch (RequestException $e) {
+        } catch (RequestError $e) {
             $this->logger->error("[Alma] Could not fetch payment $almaPaymentId to validate payment $pid");
             throw $e;
         }

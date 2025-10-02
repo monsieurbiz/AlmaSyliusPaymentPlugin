@@ -22,6 +22,7 @@ use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
 {
@@ -35,10 +36,8 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
 
     /** @var LoggerInterface */
     protected $logger;
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
+
+    private ?SessionInterface $session;
 
     /**
      * @param LoggerInterface $logger
@@ -48,7 +47,7 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
     {
         $this->apiClass = AlmaBridge::class;
         $this->logger = $logger;
-        $this->session = $requestStack->getMainRequest()->getSession();
+        $this->session = $requestStack->getMainRequest()?->getSession();
     }
 
     /**
@@ -75,7 +74,7 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
 
             // In case of error, redirecting to the "after url" will trigger the StatusAction that will assess the
             // status of the payment and redirect to the payment method choices when it's considered "new"
-            throw new HttpRedirect($captureRequest->getToken()->getAfterUrl());
+            throw new HttpRedirect((string) $captureRequest->getToken()?->getAfterUrl());
         }
 
         throw new HttpRedirect($payment->url);
@@ -83,6 +82,10 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
 
     private function addErrorFlash(): void
     {
+        if (null === $this->session) {
+            return;
+        }
+
         /** @var FlashBagInterface $flashBag */
         $flashBag = $this->session->getBag('flashes');
         $flashBag->add('error', 'alma_sylius_payment_plugin.payment.creation_failed');

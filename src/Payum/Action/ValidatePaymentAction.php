@@ -28,7 +28,7 @@ final class ValidatePaymentAction implements ActionInterface, ApiAwareInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param mixed $request
      *
      * @throws RequestError
      */
@@ -40,7 +40,7 @@ final class ValidatePaymentAction implements ActionInterface, ApiAwareInterface
         $payment = $request->getModel();
         $details = $payment->getDetails();
 
-        /** @var Payment $paymentData */
+        /** @var ?Payment $paymentData */
         $paymentData = null;
         $details[AlmaBridgeInterface::DETAILS_KEY_IS_VALID] = $this->api->validatePayment(
             $payment,
@@ -54,9 +54,6 @@ final class ValidatePaymentAction implements ActionInterface, ApiAwareInterface
         $payment->setDetails($details);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function supports($request): bool
     {
         return $request instanceof ValidatePayment

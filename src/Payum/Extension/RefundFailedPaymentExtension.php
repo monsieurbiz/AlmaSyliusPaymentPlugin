@@ -16,6 +16,7 @@ use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  *  A Payum extension to make sure all payment validation failures lead to a full refund of the payment, so that the
@@ -23,31 +24,24 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
  */
 class RefundFailedPaymentExtension implements ExtensionInterface
 {
-    /** @var AlmaBridgeInterface */
-    protected $api;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
+    private ?SessionInterface $session;
 
     public function __construct(
-        AlmaBridgeInterface $api,
-        LoggerInterface $logger,
+        private AlmaBridgeInterface $api,
+        private LoggerInterface $logger,
         RequestStack $requestStack,
     ) {
         $this->api = $api;
         $this->logger = $logger;
-        $this->session = $requestStack->getMainRequest()->getSession();
+        $this->session = $requestStack->getMainRequest()?->getSession();
     }
 
     private function addFlash(string $type, string $message, ?array $params = []): void
     {
+        if (null === $this->session) {
+            return;
+        }
+
         /** @var FlashBagInterface $flashBag */
         $flashBag = $this->session->getBag('flashes');
 
@@ -62,9 +56,6 @@ class RefundFailedPaymentExtension implements ExtensionInterface
         $flashBag->add($type, ['message' => $message, 'parameters' => $params]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function onPostExecute(Context $context): void
     {
         $request = $context->getRequest();
@@ -106,7 +97,7 @@ class RefundFailedPaymentExtension implements ExtensionInterface
         $alma = $this->api->getDefaultClient();
 
         try {
-            $alma->payments->refund($almaPid);
+            $alma->payments->fullRefund($almaPid);
             $this->addFlash('info', 'alma_sylius_payment_plugin.payment.failed_refunded');
 
             $details[AlmaBridgeInterface::DETAILS_KEY_ERROR_TRIGGERED_REFUND] = true;
@@ -122,16 +113,10 @@ class RefundFailedPaymentExtension implements ExtensionInterface
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function onPreExecute(Context $context): void
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function onExecute(Context $context): void
     {
     }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Utils;
 
 use Doctrine\Common\Collections\Collection;
-use Sylius\Component\Resource\Model\TranslatableInterface;
-use Sylius\Component\Resource\Model\TranslationInterface;
+use Sylius\Resource\Model\TranslatableInterface;
+use Sylius\Resource\Model\TranslationInterface;
 
 class Utils
 {

@@ -9,6 +9,7 @@ use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Alma\SyliusPaymentPlugin\DataBuilder\EligibilityDataBuilder;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Sylius\Component\Core\Model\PaymentMethodInterface;
+use Sylius\Component\Payment\Model\GatewayConfigInterface;
 
 final class EligibilityHelper
 {
@@ -27,7 +28,7 @@ final class EligibilityHelper
         string $billingCountryCode,
         string $shippingCountryCode,
         string $locale,
-    ) {
+    ): array {
         $data = $this->eligibilityDataBuilder;
 
         return $this->almaBridge->retrieveEligibilities(
