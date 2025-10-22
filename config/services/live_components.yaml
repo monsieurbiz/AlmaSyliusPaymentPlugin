@@ -1,0 +1,7 @@
+services:
+    Alma\SyliusPaymentPlugin\Twig\Component\PlansComponent:
+        autowire: true
+        autoconfigure: true
+        public: false
+        tags:
+            - { name: 'sylius.live_component.shop', key: 'alma:shop:plans' }

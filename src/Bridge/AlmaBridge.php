@@ -18,6 +18,7 @@ use Payum\Core\Bridge\Spl\ArrayObject;
 use Psr\Log\LoggerInterface;
 use Sylius\Bundle\CoreBundle\SyliusCoreBundle;
 use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
 
 final class AlmaBridge implements AlmaBridgeInterface
 {
@@ -164,5 +165,18 @@ final class AlmaBridge implements AlmaBridgeInterface
             && \in_array($paymentData->state, [AlmaPayment::STATE_IN_PROGRESS, AlmaPayment::STATE_PAID], true)
             // Extra-check that first installment has indeed been paid
             && Instalment::STATE_PAID === $paymentData->payment_plan[0]->state;
+    }
+
+    public function getFeePlans(PaymentMethodInterface $paymentMethod): array
+    {
+        $alma = $this->getDefaultClient();
+
+        try {
+            $almaFeePlans = $alma->merchants->feePlans();
+        } catch (\Exception $e) {
+            $this->logger->error('Get Alma Fee plans :', [$e->getMessage()]);
+        }
+
+        return $almaFeePlans;
     }
 }

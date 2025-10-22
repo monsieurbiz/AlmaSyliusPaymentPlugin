@@ -12,11 +12,13 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Alma\API\Endpoints\Results\Eligibility;
+use Alma\SyliusPaymentPlugin\Helper\FeePlansHelper;
 
 class AlmaExtension extends AbstractExtension
 {
     public function __construct(
         private EligibilityHelper $eligibilityHelper,
+        private FeePlansHelper $feePlansHelper,
         private LocaleContextInterface $localeContext,
     ) {
     }
@@ -33,6 +35,8 @@ class AlmaExtension extends AbstractExtension
     {
         return [
             new TwigFunction('alma_get_plan_data', [$this, 'getPlanData']),
+            new TwigFunction('alma_get_merchant_id', [$this, 'getMerchantId']),
+            new TwigFunction('alma_get_fee_plans', [$this, 'getFeePlans']),
         ];
     }
 
@@ -86,5 +90,15 @@ class AlmaExtension extends AbstractExtension
                 'taeg' => $eligibility->annualInterestRate,
             ]
         ];
+    }
+
+    public function getMerchantId(): string
+    {
+        return $this->feePlansHelper->getMerchantId();
+    }
+
+    public function getFeePlans(bool $forBadges): array
+    {
+        return $forBadges ? $this->feePlansHelper->getFeePlansForBadge() : $this->feePlansHelper->getFeePlans();
     }
 }

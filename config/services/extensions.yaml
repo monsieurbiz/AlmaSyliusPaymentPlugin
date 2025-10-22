@@ -14,5 +14,6 @@ services:
     autowire: true
     arguments:
       $eligibilityHelper: '@alma.sylius_payment_plugin.helper.eligibility'
+      $feePlansHelper: '@alma.sylius_payment_plugin.helper.fee_plans'
     tags:
       - name: twig.extension

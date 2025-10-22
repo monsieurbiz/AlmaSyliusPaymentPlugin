@@ -1,0 +1,24 @@
+{% set merchantId = alma_get_merchant_id() %}
+{% if merchantId %}
+    <script src="https://cdn.jsdelivr.net/npm/@alma/widgets@3.x.x/dist/widgets.umd.js"></script>
+    <script type="text/javascript">
+        var widgets = Alma.Widgets.initialize(
+            '{{ merchantId|escape('js') }}',
+            Alma.ApiMode.LIVE,
+        );
+
+        document.addEventListener('alma:plans:mounted', function(event) {
+            let amount = event.detail.amount;
+            let plans = event.detail.plans;
+            let locale = event.detail.locale.substring(0, 2);
+            widgets.add(
+                Alma.Widgets.PaymentPlans, {
+                    container: '#alma-widget',
+                    purchaseAmount: amount,
+                    locale: locale,
+                    plans: plans,
+                }
+            );
+        });
+    </script>
+{% endif %}

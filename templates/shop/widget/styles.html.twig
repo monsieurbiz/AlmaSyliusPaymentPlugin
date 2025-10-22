@@ -1,0 +1,4 @@
+{% set merchantId = alma_get_merchant_id() %}
+{% if merchantId %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@alma/widgets@3.x.x/dist/widgets.min.css">
+{% endif %}

@@ -8,3 +8,27 @@ sylius_twig_hooks:
             installment_plan_action:
                 template: '@AlmaSyliusPaymentPlugin/shop/form/select_payment/payment/choice/details/installment_plan.html.twig'
                 priority: -100
+        'sylius_shop.product.show#stylesheets':
+            alma_widget:
+                template: "@AlmaSyliusPaymentPlugin/shop/widget/styles.html.twig"
+                priority: -1000
+        'sylius_shop.product.show.content.info.summary.add_to_cart':
+            alma_widget:
+                template: "@AlmaSyliusPaymentPlugin/shop/widget/component.html.twig"
+                priority: -1000
+        'sylius_shop.product.show#javascripts':
+            alma_widget:
+                template: "@AlmaSyliusPaymentPlugin/shop/widget/scripts.html.twig"
+                priority: -1000
+        'sylius_shop.cart#stylesheets':
+            alma_widget:
+                template: "@AlmaSyliusPaymentPlugin/shop/widget/styles.html.twig"
+                priority: -1000
+        'sylius_shop.cart.index.content.form.sections.general#right':
+            alma_widget:
+                template: "@AlmaSyliusPaymentPlugin/shop/widget/component.html.twig"
+                priority: 10
+        'sylius_shop.cart#javascripts':
+            alma_widget:
+                template: "@AlmaSyliusPaymentPlugin/shop/widget/scripts.html.twig"
+                priority: -1000

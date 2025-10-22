@@ -1,0 +1,18 @@
+{% set merchantId = alma_get_merchant_id() %}
+{% set variant = hookable_metadata.context.variant|default(null) %}
+{% set quantity = hookable_metadata.context.formValues.cartItem.quantity|default(1) %}
+{% set locale = sylius.localeCode %}
+{% set order = hookable_metadata.context.resource|default(null) %}
+
+{% if merchantId and variant %}
+    {% set price = variant|sylius_calculate_price({'channel': sylius.channel}) %}
+    {% set amount = quantity * price %}
+    {% set plans = alma_get_fee_plans(true) %}
+    {{ component('alma:shop:plans', { amount, plans, locale }) }}
+{% elseif merchantId and order %}
+    {% set amount = order.total %}
+    {% set plans = alma_get_fee_plans(true) %}
+    <div class="mb-4">
+        {{ component('alma:shop:plans', { amount, plans, locale }) }}
+    </div>
+{% endif %}

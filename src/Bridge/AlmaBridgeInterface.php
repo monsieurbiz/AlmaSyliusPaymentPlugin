@@ -13,6 +13,7 @@ use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfig;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
+use Sylius\Component\Core\Model\PaymentMethodInterface;
 
 interface AlmaBridgeInterface
 {
@@ -53,4 +54,6 @@ interface AlmaBridgeInterface
      * @return Eligibility|Eligibility[]|array
      */
     public function retrieveEligibilities(array $data): array;
+
+    public function getFeePlans(PaymentMethodInterface $paymentMethod): array;
 }
