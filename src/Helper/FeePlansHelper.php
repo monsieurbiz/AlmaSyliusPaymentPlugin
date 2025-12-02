@@ -35,6 +35,9 @@ final class FeePlansHelper
         $plansArray = [];
         /** @var FeePlan $plan */
         foreach ($feePlans as $plan) {
+            if (null === $plan->installments_count || $plan->installments_count < 2) {
+                continue;
+            }
             $plansArray[] = $this->formatFeePlanForBadge($plan);
         }
 
