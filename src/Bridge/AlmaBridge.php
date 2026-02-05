@@ -174,6 +174,7 @@ final class AlmaBridge implements AlmaBridgeInterface
         try {
             $almaFeePlans = $alma->merchants->feePlans();
         } catch (\Exception $e) {
+            $almaFeePlans = [];
             $this->logger->error('Get Alma Fee plans :', [$e->getMessage()]);
         }
 
