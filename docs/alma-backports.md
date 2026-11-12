@@ -55,6 +55,25 @@ Resolver/Twig et une conversion après éligibilité avec de nouvelles URL.
 Le harnais partagé (`tests/bootstrap.php`, `phpunit.backports.xml`) et le lien
 README arrivent dans ce premier lot.
 
+## Lot 02 — Dernière mensualité du crédit
+
+Le choix 24 est préexistant à ces backports : aucun ajout au formulaire de
+production dans ce lot. Les tests soumettent explicitement le mode `redirect`,
+déjà accepté par le formulaire avant le lot 03.
+
+Le rendu distingue la dernière mensualité lorsqu'elle diffère des mensualités
+intermédiaires, avec une nouvelle traduction dans les sept langues. Les tests
+couvrent les choix existants et 24, les valeurs inconnues, les clés et le marchand,
+le payload entier, les plans courts et crédit, les frais et le TAEG nul/non nul.
+
+- `templates/shop/partials/alma_credit.html.twig`
+- `translations/messages.de.yml`, `messages.en.yml`, `messages.es.yml`,
+  `messages.fr.yml`, `messages.it.yml`, `messages.nl.yml`, `messages.pt.yml`
+  (tous dans `translations/`)
+- `tests/Form/AlmaGatewayConfigurationTypeTest.php`
+- `tests/DataBuilder/EligibilityDataBuilderTest.php`
+- `tests/Twig/AlmaCreditRenderingTest.php`
+
 ## Vérification de release isolée — 12 novembre 2026
 
 Avant chaque commit, l'index exact est exporté dans un snapshot temporaire à

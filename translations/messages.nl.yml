@@ -20,6 +20,7 @@ alma_sylius_payment_plugin:
     logo_alma: Logo Alma
     today: Vandaag
     installment_one_line: '%firstAmount% vandaag dan %installment% x %nextAmount%'
+    installment_one_line_with_last: '%firstAmount% vandaag, dan %installment% x %nextAmount% en een laatste termijn van %lastAmount%'
     your_credit: Uw krediet
     cart_total: Totaal winkelwagen
     cost_of_credit: Kosten van krediet

@@ -1,11 +1,15 @@
 {% set firstAmount = plans.paymentPlan[0].total_amount %}
 {% set nextAmount = plans.paymentPlan[1].total_amount %}
+{% set lastAmount = (plans.paymentPlan|last).total_amount %}
+{% set hasDifferentLastAmount = lastAmount != nextAmount %}
 
 <div class="alma-installment-plan-details">
-    <h6 class="mb-3">{{ 'alma_sylius_payment_plugin.checkout.installment_one_line'|trans({
+    {% set summaryKey = hasDifferentLastAmount ? 'installment_one_line_with_last' : 'installment_one_line' %}
+    <h6 class="mb-3">{{ ('alma_sylius_payment_plugin.checkout.' ~ summaryKey)|trans({
         '%firstAmount%': firstAmount|alma_price_from_cent|format_currency('EUR'),
-        '%installment%': installmentsCount - 1,
-        '%nextAmount%': nextAmount|alma_price_from_cent|format_currency('EUR')
+        '%installment%': installmentsCount - (hasDifferentLastAmount ? 2 : 1),
+        '%nextAmount%': nextAmount|alma_price_from_cent|format_currency('EUR'),
+        '%lastAmount%': lastAmount|alma_price_from_cent|format_currency('EUR')
     }) }}</h6>
 
     <h6 class="mb-3">{{ 'alma_sylius_payment_plugin.checkout.your_credit'|trans }}</h6>
