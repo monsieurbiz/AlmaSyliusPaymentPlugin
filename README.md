@@ -76,3 +76,8 @@ at Alma, or contact [support@getalma.eu](mailto:support@getalma.eu).
 5. Choose a name for your method in the languages relevant to your shop.
 
 6. You're done! Save the payment method to start accepting instalments payments on your shop!
+
+### Local regression tests
+
+See [the local Alma backports guide](docs/alma-backports.md) for the isolated
+PHPUnit suite, its limitations and the consumer integration checks still required.
