@@ -22,12 +22,6 @@ services:
         factory: alma_payments
         alias: payum.action.capture
 
-  Alma\SyliusPaymentPlugin\Payum\Action\RenderInPagePaymentAction:
-    public: true
-    tags:
-      - name: payum.action
-        factory: alma_payments
-
   Alma\SyliusPaymentPlugin\Payum\Action\RedirectToPaymentPageAction:
     public: true
     arguments:

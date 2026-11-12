@@ -77,6 +77,9 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
             throw new HttpRedirect((string) $captureRequest->getToken()?->getAfterUrl());
         }
 
+        $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = $payment->id;
+        $captureRequest->getFirstModel()->setDetails($details->getArrayCopy());
+
         throw new HttpRedirect($payment->url);
     }
 

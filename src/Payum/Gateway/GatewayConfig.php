@@ -56,6 +56,6 @@ class GatewayConfig implements GatewayConfigInterface
 
     public function getPaymentPageMode(): string
     {
-        return $this->config[self::CONFIG_PAYMENT_PAGE_MODE];
+        return self::PAYMENT_PAGE_MODE_REDIRECT;
     }
 }

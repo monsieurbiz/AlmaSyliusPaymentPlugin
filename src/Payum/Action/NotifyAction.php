@@ -51,12 +51,20 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
             return;
         }
 
-        // Make sure the payment's details include the Alma payment ID
         $details = ArrayObject::ensureArrayObject($request->getModel());
-        $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = (string) $query[AlmaBridgeInterface::QUERY_PARAM_PID];
+        $paymentId = $query[AlmaBridgeInterface::QUERY_PARAM_PID];
+        if (
+            !\is_string($paymentId) || '' === trim($paymentId)
+            || ($details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID)
+                && $paymentId !== $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID])
+        ) {
+            throw new HttpResponse('{"error":true}', Response::HTTP_BAD_REQUEST, ['content-type' => 'application/json']);
+        }
+
+        $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = $paymentId;
         $payment->setDetails($details->getArrayCopy());
 
-        // If payment hasn't been validated yet, validate its status against Alma's payment state
+        // Refresh non-terminal payments: Alma's state may have changed since the previous validation.
         if (\in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)) {
             try {
                 $this->gateway->execute(new ValidatePayment($payment));
@@ -77,7 +85,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
         $details->replace($payment->getDetails());
 
         // Down here means the callback has been correctly handled, regardless of the final payment state
-        throw new HttpResponse((string) json_encode(['success' => true, 'state' => $payment->getDetails()[AlmaBridgeInterface::DETAILS_KEY_IS_VALID]]), Response::HTTP_OK, ['content-type' => 'application/json']);
+        throw new HttpResponse((string) json_encode(['success' => true, 'state' => $details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)]), Response::HTTP_OK, ['content-type' => 'application/json']);
     }
 
     public function supports($request): bool
