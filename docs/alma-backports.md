@@ -11,7 +11,15 @@ changement était déjà l'ajout du choix 24 échéances au formulaire.
 Pour la phase de release du 12 novembre 2026, Jacques a explicitement autorisé
 la branche `feat/29120-alma-backports` et exactement trois commits locaux dans
 l'ordre 01 → 02 → 03. `main` reste à la baseline ci-dessus. Aucun push ni PR
-n'est autorisé ou effectué.
+n'a été effectué par cette phase de travail.
+
+Le contrôle public du 16 novembre confirme désormais la branche distante à
+`d795967b87f7092d0d6ce9f8c20b742b797dd860` ; les mentions d'absence de push du
+12 novembre ne décrivent pas l'état distant actuel. Une quatrième étape locale,
+distincte, est autorisée pour le widget natif V4 :
+[provenance, migration et vérifications](alma-widget-v4.md), suivi
+[MBIZ-29091](https://support.monsieurbiz.com/issues/29091). Cette nouvelle
+intervention n'autorise ni push, ni PR, ni modification du consommateur.
 
 ## Périmètre des lots
 
@@ -212,8 +220,9 @@ les diagnostics.
 
 ## Intégration et recette restant à autoriser
 
-- Les trois commits locaux sont autorisés sur la branche dédiée ; aucun push
-  ni PR n'est effectué.
+- Les trois premiers commits ont été produits localement le 12 novembre.
+  Leur présence distante est constatée le 16 novembre ; aucun push ni PR
+  n'est effectué par l'étape widget V4.
 - Publier le commit final du fork sur demande, puis faire consommer **exactement** ce
   commit par Baguetterie, sans mise à jour transitive. Aucun Composer hôte n'est
   modifié dans ces lots.
