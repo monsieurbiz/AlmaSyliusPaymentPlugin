@@ -27,6 +27,7 @@ services:
     arguments:
       $logger: '@logger'
       $requestStack: '@request_stack'
+      $translator: '@translator'
     tags:
       - name: payum.action
         factory: alma_payments

@@ -90,7 +90,7 @@ seule (SDK Alma 2.6.1, Sylius 2.1.17).
   `d0dc8b108deafd650dbc6820fe0daf2fd372b842`.
 - Lot 02 (cumulatif) : **18 tests, 282 assertions, OK** ; arbre
   `6189b1f6860e3127e426bb7160a1310053a3b68f`.
-- Lot 03 (suite complète) : **40 tests, 728 assertions, OK** ; arbre exact
+- Lot 03 (suite complète) : **45 tests, 809 assertions, OK** ; arbre exact
   consigné dans le reçu externe et dans le rapport final (pas de SHA autoréférent
   dans le commit).
 
@@ -244,12 +244,81 @@ sont pas validés par des tests locaux du fork.
 
 ## Points de vigilance préexistants
 
-La capture en redirection crée un paiement Alma à chaque exécution. Les lots ne
-créent pas de garantie d'idempotence distante : captures concurrentes, crash et
-persistance doivent être vérifiés côté consommateur avant de conclure sur ce
-risque. Plusieurs créations ne prouvent pas plusieurs débits.
+### Reprise de redirection
+
+Lorsqu'un PID Alma est déjà enregistré, `RedirectToPaymentPageAction` ne crée pas
+un nouveau paiement. Elle accepte seulement un paiement local `new` ou
+`processing`, exige un snapshot non sensible `creation_context` complet
+(`payment_method_id`, `gateway_config_id`, `merchant_id`, `api_mode`,
+`currency`) et vérifie qu'il correspond à la configuration courante. Elle
+relit ensuite le PID auprès d'Alma et contrôle l'identité, le propriétaire local,
+le montant et les échéances initiaux et courants, l'absence d'expiration et une
+URL HTTPS absolue sans information utilisateur. Un montant ou moyen modifié est
+donc bloqué, plutôt que de reprendre silencieusement l'intention précédente. Si
+ces contrôles réussissent, elle redirige vers cette même URL, sans création,
+remplacement du PID, validation ni écriture `is_valid`.
+
+Une première capture sans PID conserve sa création existante, son payload
+initial et son traitement de `RequestError`, même lorsque la configuration ne
+fournit pas de `merchant_id`. En revanche, un PID ne peut être repris qu'avec
+ce contexte initial complet : un PID historique, un snapshot incomplet — y
+compris sans `merchant_id` — ou incohérent, une réponse distante invalide ou
+expirée, une URL invalide et un état local terminal sont refusés (`409`) ;
+l'indisponibilité de lecture Alma est renvoyée en `503`. Ces refus n'effacent ni
+payload ni PID et ne retentent pas une création. Les erreurs affichées sont
+traduites ; les diagnostics ne journalisent pas de payload ni de secret. La
+validation reste réservée au retour/à `NotifyAction` existants, y compris pour
+un paiement Alma déjà payé et sa page récapitulative.
+
+Ce contrat ne constitue pas une garantie d'idempotence financière : il couvre
+une reprise séquentielle après persistance du PID, pas deux premières captures
+concurrentes ni un crash après succès distant avant la sauvegarde locale. Il ne
+fournit ni bouton de nouvel essai automatique ni réconciliation globale. Une
+annulation navigateur sans PID reste en attente. Un nouvel essai commercial doit
+passer par un paiement Sylius distinct après son workflow d'échec ou
+d'annulation ; l'ancien PID n'est pas effacé.
+
+La suite historique a rapporté **45 tests et 809 assertions, OK**. Avant ce
+correctif, QA a constaté **18 tests, 375 assertions, 4 échecs** dans
+`tests/Payum/RedirectFlowTest.php`, et **50 tests, 883 assertions, 4 échecs**
+pour la suite complète. Le correctif du mode API a fait passer ses cinq cas de
+**30 assertions et 4 `TypeError`** à **7 tests, 91 assertions, OK**. Le dernier
+résultat QA de la suite complète est **69 tests, 1 942 assertions, OK**.
+
+Depuis la racine du plugin, avec `V` désignant le répertoire `vendor` hôte déjà
+disponible, QA a exécuté :
+
+```bash
+ALMA_TEST_AUTOLOAD="$V/autoload.php" symfony php "$V/bin/phpunit" \
+  -c phpunit.backports.xml --filter ApiMode tests/Payum/RedirectFlowTest.php
+ALMA_TEST_AUTOLOAD="$V/autoload.php" symfony php "$V/bin/phpunit" \
+  -c phpunit.backports.xml
+node --check tests/Widget/run-rendered-widget.cjs
+symfony php -l tests/Payum/RedirectFlowTest.php
+symfony php -l src/Payum/Action/RedirectToPaymentPageAction.php
+symfony php -l src/Bridge/AlmaBridgeInterface.php
+symfony php -l src/Payum/Gateway/GatewayConfig.php
+git diff --check
+```
+
+Les tests PHPUnit couvrent aussi le rendu JavaScript réel des fixtures et
+utilisent un SDK simulé. QA a également validé le parsing YAML de
+`config/services/actions.yaml` et des sept fichiers `translations/flashes.*.yml`,
+sans boot applicatif. Ces résultats sont attribués à QA ; aucune requête
+financière n'a été envoyée.
+
+La capture en redirection créait un paiement Alma à chaque exécution. Cette
+observation explique le défaut corrigé ci-dessus mais ne prouve pas deux
+débits. Les garanties de concurrence, de crash et de persistance restent à
+vérifier côté consommateur avant de conclure sur ce risque. HTTP, kernel,
+base de données et `UpdatePaymentStateExtension` ne font pas partie de cette
+vérification.
 
 L'extension de remboursement sur échec accepte encore des données Alma absentes.
-Ce comportement préexistant n'est pas rénové ici. Ne pas considérer la simple
-protection du PID au retour comme une preuve complète de sûreté du remboursement
-ou de ses transitions en base ; prévoir une vérification ciblée côté hôte.
+Ce comportement préexistant n'est pas rénové ici : avant la redirection,
+`RefundFailedPaymentExtension` peut déjà rembourser si `is_valid=false`. Le
+correctif n'ajoute aucune validation, valeur `false` ou demande de remboursement.
+Ne pas le considérer comme une preuve complète de sûreté du remboursement ou de
+ses transitions en base ; prévoir une vérification ciblée côté hôte. QA a exercé
+la véritable `RefundFailedPaymentExtension`, y compris son comportement
+préexistant avec `is_valid=false`.

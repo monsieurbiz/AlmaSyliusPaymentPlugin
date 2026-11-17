@@ -3,3 +3,5 @@ alma_sylius_payment_plugin:
     failed_refunded: Er heeft zich een fout voorgedaan. Uw Alma-betaling is volledig terugbetaald. Probeer het opnieuw.
     failed_not_refunded: 'Er is een fout opgetreden en uw Alma-betaling kon niet worden terugbetaald. Neem contact met ons op en vermeld de volgende referentie: %pid%'
     creation_failed: Er is een fout opgetreden tijdens het initialiseren van de betaling. Probeer het opnieuw of kies een andere betaalmethode.
+    reopening_failed: Deze betaling kan niet opnieuw worden geopend. Ga terug naar uw bestelling.
+    reopening_unavailable: Uw betaling is tijdelijk niet beschikbaar. Probeer het later opnieuw.
