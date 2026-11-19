@@ -21,6 +21,7 @@ interface AlmaBridgeInterface
 
     public const DETAILS_KEY_PAYLOAD = 'payload';
     public const DETAILS_KEY_PAYMENT_ID = 'payment_id';
+    public const DETAILS_KEY_CREATION_CONTEXT = 'creation_context';
     public const DETAILS_KEY_PAYMENT_DATA = 'payment_data';
     public const DETAILS_KEY_IS_VALID = 'is_valid';
     public const DETAILS_KEY_ERROR_TRIGGERED_REFUND = 'error_triggered_refund';

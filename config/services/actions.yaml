@@ -21,18 +21,14 @@ services:
       - name: payum.action
         factory: alma_payments
         alias: payum.action.capture
-
-  Alma\SyliusPaymentPlugin\Payum\Action\RenderInPagePaymentAction:
-    public: true
-    tags:
-      - name: payum.action
-        factory: alma_payments
+        prepend: true
 
   Alma\SyliusPaymentPlugin\Payum\Action\RedirectToPaymentPageAction:
     public: true
     arguments:
       $logger: '@logger'
       $requestStack: '@request_stack'
+      $translator: '@translator'
     tags:
       - name: payum.action
         factory: alma_payments

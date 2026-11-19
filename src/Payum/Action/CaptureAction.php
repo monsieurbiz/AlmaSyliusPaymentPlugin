@@ -6,9 +6,7 @@ namespace Alma\SyliusPaymentPlugin\Payum\Action;
 
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
-use Alma\SyliusPaymentPlugin\Payum\Gateway\GatewayConfigInterface;
 use Alma\SyliusPaymentPlugin\Payum\Request\RedirectToPaymentPage;
-use Alma\SyliusPaymentPlugin\Payum\Request\RenderInPagePayment;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
@@ -17,7 +15,7 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
-use RuntimeException;
+use Sylius\Component\Core\Model\PaymentInterface;
 
 final class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
 {
@@ -41,25 +39,20 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        $config = $this->api->getGatewayConfig();
-
-        $paymentPageMode = $config->getPaymentPageMode();
-        switch ($paymentPageMode) {
-            case GatewayConfigInterface::PAYMENT_PAGE_MODE_IN_PAGE:
-                $this->gateway->execute(new RenderInPagePayment($request->getModel()));
-                break;
-            case GatewayConfigInterface::PAYMENT_PAGE_MODE_REDIRECT:
-                $this->gateway->execute(new RedirectToPaymentPage($request));
-                break;
-            default:
-                throw new RuntimeException(\sprintf('[Alma] Unknown payment page mode "%s". Check gateway config', $paymentPageMode));
-        }
+        $this->gateway->execute(new RedirectToPaymentPage($request));
     }
 
     public function supports($request): bool
     {
-        return
-            $request instanceof Capture
-            && $request->getModel() instanceof ArrayObject;
+        if (!$request instanceof Capture) {
+            return false;
+        }
+
+        $model = $request->getModel();
+
+        // Reopening uses the stored PID, not the status check that Sylius uses before conversion.
+        return $model instanceof ArrayObject
+            || ($model instanceof PaymentInterface
+                && array_key_exists(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID, $model->getDetails()));
     }
 }

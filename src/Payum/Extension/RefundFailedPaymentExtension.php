@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Payum\Extension;
 
 use Alma\API\Entities\Payment;
-use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface;
 use Exception;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -60,13 +59,18 @@ class RefundFailedPaymentExtension implements ExtensionInterface
     {
         $request = $context->getRequest();
 
-        if (false === $request instanceof GetStatusInterface) {
+        if (
+            !$request instanceof GetStatusInterface
+            || null !== $context->getReply()
+            || null !== $context->getException()
+        ) {
             return;
         }
 
         /** @var PaymentInterface $payment */
         $payment = $request->getModel();
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
+        $almaPid = $details->get(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID);
 
         /** @var Payment|array|null $paymentData */
         $paymentData = $details->get(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_DATA);
@@ -80,6 +84,7 @@ class RefundFailedPaymentExtension implements ExtensionInterface
         // or it's long past validation time and this could be a fraudulent refund attempt)
         if (
             !\in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
+            || !\is_string($almaPid) || '' === trim($almaPid)
             || false !== $details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)
             || true === $details->get(AlmaBridgeInterface::DETAILS_KEY_ERROR_TRIGGERED_REFUND)
             || (null !== $paymentData
@@ -90,9 +95,6 @@ class RefundFailedPaymentExtension implements ExtensionInterface
 
         /** @var int $pid */
         $pid = $payment->getId();
-
-        /** @var string $almaPid */
-        $almaPid = $details[AlmaBridge::DETAILS_KEY_PAYMENT_ID];
 
         $alma = $this->api->getDefaultClient();
 

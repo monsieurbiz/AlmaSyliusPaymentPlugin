@@ -15,11 +15,13 @@ use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
+use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\GetStatusInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Sylius\Component\Core\Model\PaymentInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface, LoggerAwareInterface
 {
@@ -59,15 +61,28 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
             return;
         }
 
-        if (!$query->offsetExists(AlmaBridgeInterface::QUERY_PARAM_PID)) {
+        if (
+            !$query->offsetExists(AlmaBridgeInterface::QUERY_PARAM_PID)
+            && !$details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)
+        ) {
             $request->markPending();
 
             return;
         }
 
-        // Make sure the payment's details include the Alma payment ID
-        $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = (string) $query[AlmaBridgeInterface::QUERY_PARAM_PID];
-        $payment->setDetails($details->getArrayCopy());
+        $candidate = null;
+        if ($query->offsetExists(AlmaBridgeInterface::QUERY_PARAM_PID)) {
+            $paymentId = $query[AlmaBridgeInterface::QUERY_PARAM_PID];
+            if (
+                !\is_string($paymentId) || '' === trim($paymentId)
+                || ($details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID)
+                    && $paymentId !== $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID])
+            ) {
+                throw new HttpResponse('{"error":true}', Response::HTTP_BAD_REQUEST, ['content-type' => 'application/json']);
+            }
+
+            $candidate = $details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID) ? null : $paymentId;
+        }
 
         // If payment hasn't been validated yet, validate its status against Alma's payment state
         if (
@@ -75,8 +90,12 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
             && \in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
         ) {
             try {
-                $this->gateway->execute(new ValidatePayment($payment));
+                $this->gateway->execute(new ValidatePayment($payment, $candidate));
             } catch (RequestError $e) {
+                if (null !== $candidate) {
+                    throw $e;
+                }
+
                 $details = ArrayObject::ensureArrayObject($payment->getDetails());
                 $details[AlmaBridgeInterface::DETAILS_KEY_IS_VALID] = false;
                 $payment->setDetails($details->getArrayCopy());

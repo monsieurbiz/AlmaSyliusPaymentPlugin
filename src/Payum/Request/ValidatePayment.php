@@ -14,10 +14,17 @@ class ValidatePayment extends Generic
     /** @var PaymentInterface */
     protected $model;
 
-    public function __construct(PaymentInterface $payment)
+    public function __construct(PaymentInterface $payment, private ?string $candidatePaymentId = null)
     {
         parent::__construct($payment);
-        Assert::keyExists($payment->getDetails(), AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID);
+        if (null === $candidatePaymentId) {
+            Assert::keyExists($payment->getDetails(), AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID);
+        }
+    }
+
+    public function getCandidatePaymentId(): ?string
+    {
+        return $this->candidatePaymentId;
     }
 
     public function getModel(): PaymentInterface

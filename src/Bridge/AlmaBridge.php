@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Alma\SyliusPaymentPlugin\Bridge;
 
 use Alma\API\Client;
+use Alma\API\Endpoints\Results\Eligibility;
 use Alma\API\Entities\Instalment;
 use Alma\API\Entities\Merchant;
 use Alma\API\Entities\Payment;
@@ -114,7 +115,7 @@ final class AlmaBridge implements AlmaBridgeInterface
 
         $alma = $this->getDefaultClient();
         try {
-            return $alma->payments->eligibility($builder([], $payment), true);
+            return $this->normalizeEligibilities($alma->payments->eligibility($builder([], $payment), true));
         } catch (RequestError $e) {
             $this->logger->error('[Alma] Eligibility call failed with error: ' . $e->getMessage());
         }
@@ -126,12 +127,19 @@ final class AlmaBridge implements AlmaBridgeInterface
     {
         $alma = $this->getDefaultClient();
         try {
-            return $alma->payments->eligibility($data, true);
+            return $this->normalizeEligibilities($alma->payments->eligibility($data, true));
         } catch (RequestError $e) {
             $this->logger->error('[Alma] Eligibility call failed with error: ' . $e->getMessage());
         }
 
         return [];
+    }
+
+    private function normalizeEligibilities(Eligibility|array $eligibilities): array
+    {
+        return $eligibilities instanceof Eligibility
+            ? ['general_' . $eligibilities->installmentsCount . '_0_0' => $eligibilities]
+            : $eligibilities;
     }
 
     public function validatePayment(
@@ -149,7 +157,12 @@ final class AlmaBridge implements AlmaBridgeInterface
             throw $e;
         }
 
-        if ($pid !== $paymentData->custom_data['payment_id']) {
+        if (
+            null === $pid
+            || $almaPaymentId !== $paymentData->id
+            || !\is_array($paymentData->custom_data)
+            || $pid !== ($paymentData->custom_data['payment_id'] ?? null)
+        ) {
             $error = "Attempt to validate payment $pid with Alma payment $almaPaymentId";
             $this->logger->error("[Alma] $error");
 
