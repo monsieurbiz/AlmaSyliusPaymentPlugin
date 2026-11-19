@@ -62,7 +62,8 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
         /** @var Capture $captureRequest */
         $captureRequest = $request->getModel();
 
-        $details = ArrayObject::ensureArrayObject($captureRequest->getModel());
+        $model = $captureRequest->getModel();
+        $details = ArrayObject::ensureArrayObject($model instanceof PaymentInterface ? $model->getDetails() : $model);
         /** @var PaymentInterface $localPayment */
         $localPayment = $captureRequest->getFirstModel();
 
@@ -117,10 +118,24 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
 
     private function reopenPayment(PaymentInterface $payment, ArrayObject $details): void
     {
+        if (false === $details->get(AlmaBridgeInterface::DETAILS_KEY_IS_VALID)) {
+            $this->rejectReopening($payment, 'failed_validation');
+        }
+
         $pid = $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID];
         $context = $details[AlmaBridgeInterface::DETAILS_KEY_CREATION_CONTEXT];
         if (!\is_string($pid) || '' === trim($pid) || !\is_array($context)) {
             $this->rejectReopening($payment, 'missing_identity_or_context');
+        }
+
+        $payload = $details[AlmaBridgeInterface::DETAILS_KEY_PAYLOAD];
+        $original = \is_array($payload) ? ($payload['payment'] ?? null) : null;
+        if (
+            !\is_array($original)
+            || !\is_int($original['purchase_amount'] ?? null)
+            || !\is_int($original['installments_count'] ?? null)
+        ) {
+            $this->rejectReopening($payment, 'amount_or_installments');
         }
 
         foreach ($this->creationContext($payment) as $key => $value) {
@@ -135,8 +150,6 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
             $this->rejectReopening($payment, 'fetch_failed', $e);
         }
 
-        $payload = $details[AlmaBridgeInterface::DETAILS_KEY_PAYLOAD];
-        $original = \is_array($payload) ? ($payload['payment'] ?? null) : null;
         if (
             $remote->id !== $pid
             || !\is_array($remote->custom_data)
@@ -146,8 +159,7 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
             $this->rejectReopening($payment, 'remote_identity');
         }
         if (
-            !\is_array($original)
-            || !\is_int($remote->purchase_amount)
+            !\is_int($remote->purchase_amount)
             || $remote->purchase_amount !== ($original['purchase_amount'] ?? null)
             || $remote->purchase_amount !== $payment->getAmount()
             || !\is_int($remote->installments_count)

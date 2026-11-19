@@ -21,6 +21,7 @@ services:
       - name: payum.action
         factory: alma_payments
         alias: payum.action.capture
+        prepend: true
 
   Alma\SyliusPaymentPlugin\Payum\Action\RedirectToPaymentPageAction:
     public: true
