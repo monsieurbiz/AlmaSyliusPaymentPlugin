@@ -10,7 +10,7 @@
         document.addEventListener('alma:plans:mounted', function(event) {
             let amount = event.detail.amount;
             let plans = event.detail.plans;
-            let locale = event.detail.locale.replace('_', '-');
+            let locale = event.detail.locale.replace(/_/g, '-');
             widgets.add(
                 Alma.Widgets.PaymentPlans, {
                     container: '#alma-widget',

@@ -82,6 +82,7 @@ final class AlmaWidgetRenderingTest extends TestCase
             ['Dutch locale', ['resource' => ['total' => 90501]], 'nl_NL', 90501, 'nl-NL'],
             ['Belgian Dutch locale', ['resource' => ['total' => 90501]], 'nl_BE', 90501, 'nl-BE'],
             ['Portuguese locale', ['resource' => ['total' => 90501]], 'pt_PT', 90501, 'pt-PT'],
+            ['Serbian Latin locale', ['resource' => ['total' => 90501]], 'sr_Latn_RS', 90501, 'sr-Latn-RS'],
             ['normalized regional locale', ['resource' => ['total' => 90501]], 'nl-BE', 90501, 'nl-BE'],
             ['short locale', ['resource' => ['total' => 90501]], 'fr', 90501, 'fr'],
         ] as [$name, $context, $locale, $amount, $widgetLocale]) {
