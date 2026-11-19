@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use TypeError;
 
 final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
 {
@@ -145,7 +146,12 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
         }
 
         try {
-            $remote = $this->api->getDefaultClient()->payments->fetch($pid);
+            $alma = $this->api->getDefaultClient();
+            try {
+                $remote = $alma->payments->fetch($pid);
+            } catch (TypeError $e) {
+                $this->rejectReopening($payment, 'invalid_fetch_response', $e);
+            }
         } catch (RequestError $e) {
             $this->rejectReopening($payment, 'fetch_failed', $e);
         }
@@ -188,7 +194,7 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
         throw new HttpRedirect($url);
     }
 
-    private function rejectReopening(PaymentInterface $payment, string $cause, ?RequestError $error = null): never
+    private function rejectReopening(PaymentInterface $payment, string $cause, RequestError | TypeError | null $error = null): never
     {
         $this->logger->error('[Alma] Payment reopening rejected', [
             'payment_id' => $payment->getId(),
@@ -196,11 +202,12 @@ final class RedirectToPaymentPageAction implements ActionInterface, ApiAwareInte
             'exception_class' => null === $error ? null : $error::class,
             'exception_code' => $error?->getCode(),
         ]);
-        $key = null === $error ? 'reopening_failed' : 'reopening_unavailable';
+        $unavailable = $error instanceof RequestError;
+        $key = $unavailable ? 'reopening_unavailable' : 'reopening_failed';
 
         throw new HttpResponse(
             $this->translator->trans('alma_sylius_payment_plugin.payment.' . $key, [], 'flashes'),
-            null === $error ? 409 : 503,
+            $unavailable ? 503 : 409,
             ['content-type' => 'text/plain; charset=UTF-8'],
         );
     }
