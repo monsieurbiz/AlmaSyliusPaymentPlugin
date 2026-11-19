@@ -157,7 +157,12 @@ final class AlmaBridge implements AlmaBridgeInterface
             throw $e;
         }
 
-        if ($pid !== $paymentData->custom_data['payment_id']) {
+        if (
+            null === $pid
+            || $almaPaymentId !== $paymentData->id
+            || !\is_array($paymentData->custom_data)
+            || $pid !== ($paymentData->custom_data['payment_id'] ?? null)
+        ) {
             $error = "Attempt to validate payment $pid with Alma payment $almaPaymentId";
             $this->logger->error("[Alma] $error");
 

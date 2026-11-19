@@ -61,14 +61,18 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
             throw new HttpResponse('{"error":true}', Response::HTTP_BAD_REQUEST, ['content-type' => 'application/json']);
         }
 
-        $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = $paymentId;
-        $payment->setDetails($details->getArrayCopy());
+        $candidate = $details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID) ? null : $paymentId;
 
         // Refresh non-terminal payments: Alma's state may have changed since the previous validation.
         if (\in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)) {
             try {
-                $this->gateway->execute(new ValidatePayment($payment));
+                $this->gateway->execute(new ValidatePayment($payment, $candidate));
             } catch (Exception $e) {
+                // Sylius queries the status again after a Payum reply, but not after an exception.
+                if (null !== $candidate) {
+                    throw $e;
+                }
+
                 $error = [
                     'error' => true,
                     'message' => $e->getMessage(),
@@ -78,10 +82,7 @@ class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareIn
             }
         }
 
-        // $details is the request's model here, but we used a copy above passed down the ValidatePaymentAction through
-        // the $payment object, which is the model of our own request.
-        // Since Payum will use whatever is in the original details model to overwrite the payment's details data, we
-        // need to make sure we copy everything that was set on the payment itself back to the NotifyRequest model.
+        // Sylius copies the Notify model back to the payment after this action.
         $details->replace($payment->getDetails());
 
         // Down here means the callback has been correctly handled, regardless of the final payment state

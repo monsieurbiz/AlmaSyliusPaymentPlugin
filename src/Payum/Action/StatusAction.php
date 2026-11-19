@@ -70,6 +70,7 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
             return;
         }
 
+        $candidate = null;
         if ($query->offsetExists(AlmaBridgeInterface::QUERY_PARAM_PID)) {
             $paymentId = $query[AlmaBridgeInterface::QUERY_PARAM_PID];
             if (
@@ -80,8 +81,7 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
                 throw new HttpResponse('{"error":true}', Response::HTTP_BAD_REQUEST, ['content-type' => 'application/json']);
             }
 
-            $details[AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID] = $paymentId;
-            $payment->setDetails($details->getArrayCopy());
+            $candidate = $details->offsetExists(AlmaBridgeInterface::DETAILS_KEY_PAYMENT_ID) ? null : $paymentId;
         }
 
         // If payment hasn't been validated yet, validate its status against Alma's payment state
@@ -90,8 +90,12 @@ final class StatusAction implements ActionInterface, ApiAwareInterface, GatewayA
             && \in_array($payment->getState(), [PaymentInterface::STATE_NEW, PaymentInterface::STATE_PROCESSING], true)
         ) {
             try {
-                $this->gateway->execute(new ValidatePayment($payment));
+                $this->gateway->execute(new ValidatePayment($payment, $candidate));
             } catch (RequestError $e) {
+                if (null !== $candidate) {
+                    throw $e;
+                }
+
                 $details = ArrayObject::ensureArrayObject($payment->getDetails());
                 $details[AlmaBridgeInterface::DETAILS_KEY_IS_VALID] = false;
                 $payment->setDetails($details->getArrayCopy());

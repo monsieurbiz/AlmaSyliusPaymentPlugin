@@ -33,12 +33,18 @@ final class PaymentValidationTest extends TestCase
         (new ReflectionProperty(AlmaBridge::class, 'almaClient'))->setValue(null, $this->previousClient);
     }
 
-    public function testDifferentInternalPaymentIdThrowsAndDoesNotPersistValidation(): void
+    public function testMismatchedRemoteIdentityThrowsAndDoesNotPersistValidation(): void
     {
-        foreach ([43, '42'] as $internalId) {
+        foreach ([
+            ['custom_data' => ['payment_id' => 43]],
+            ['custom_data' => ['payment_id' => '42']],
+            ['custom_data' => null],
+            ['custom_data' => []],
+            ['id' => 'alma_other'],
+        ] as $overrides) {
             $logger = $this->createMock(LoggerInterface::class);
             $logger->expects(self::once())->method('error')->with('[Alma] Attempt to validate payment 42 with Alma payment alma_fixture');
-            $sdkData = $this->fixture(['custom_data' => ['payment_id' => $internalId]]);
+            $sdkData = $this->fixture($overrides);
             $payments = $this->mockClient();
             $payments->expects(self::once())->method('fetch')->with('alma_fixture')->willReturn($sdkData);
             $payment = $this->payment(false);
@@ -59,6 +65,14 @@ final class PaymentValidationTest extends TestCase
         foreach ([11999, 12001] as $amount) {
             $this->assertValidation($this->fixture(['purchase_amount' => $amount]), false);
         }
+    }
+
+    public function testCandidateCannotReplaceAnAlreadyLinkedPid(): void
+    {
+        $this->mockClient()->expects(self::never())->method('fetch');
+        $this->expectException(PaymentIdMismatchException::class);
+        $this->action($this->createMock(LoggerInterface::class))
+            ->execute(new ValidatePayment($this->payment(false), 'alma_other'));
     }
 
     public function testAnyRecordedExpirationIsInvalid(): void

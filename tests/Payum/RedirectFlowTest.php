@@ -10,6 +10,7 @@ use Alma\API\Entities\Payment as AlmaPayment;
 use Alma\API\RequestError;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridge;
 use Alma\SyliusPaymentPlugin\Bridge\AlmaBridgeInterface as Details;
+use Alma\SyliusPaymentPlugin\Bridge\PaymentIdMismatchException;
 use Alma\SyliusPaymentPlugin\DataBuilder\PaymentDataBuilderInterface;
 use Alma\SyliusPaymentPlugin\Payum\Action\CaptureAction;
 use Alma\SyliusPaymentPlugin\Payum\Action\NotifyAction;
@@ -24,6 +25,7 @@ use Alma\SyliusPaymentPlugin\Payum\Request\RedirectToPaymentPage;
 use Alma\SyliusPaymentPlugin\Payum\Request\ValidatePayment;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Extension\StorageExtension;
 use Payum\Core\Gateway;
 use Payum\Core\GatewayInterface;
 use Payum\Core\Reply\HttpRedirect;
@@ -33,11 +35,14 @@ use Payum\Core\Request\GetHttpRequest;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Security\TokenInterface;
+use Payum\Core\Storage\StorageInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use ReflectionProperty;
+use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Bundle\PayumBundle\Action\CapturePaymentAction as SyliusCapturePaymentAction;
 use Sylius\Bundle\PayumBundle\Action\ExecuteSameRequestWithPaymentDetailsAction;
+use Sylius\Bundle\PayumBundle\Extension\UpdatePaymentStateExtension;
 use Sylius\Bundle\PayumBundle\Model\GatewayConfig as SyliusGatewayConfig;
 use Sylius\Bundle\PayumBundle\Provider\PaymentDescriptionProviderInterface;
 use Sylius\Component\Core\Model\Order;
@@ -250,6 +255,94 @@ final class RedirectFlowTest extends TestCase
         self::assertSame('alma_fixture', $payment->getDetails()['payment_id']);
     }
 
+    public function testLegacyCandidateFailureLeavesDetailsUntouchedAndAllowsTheOwnedPid(): void
+    {
+        foreach ([false, true] as $notify) {
+            foreach ([false, true] as $fetchError) {
+                $calls = ['create' => ['foreign_alma' => 123, 'owned_alma' => 42], 'fetch' => [], 'paid' => true];
+                [$gateway, $http] = $this->redirectGateway($calls);
+                $gateway->addExtension(new UpdatePaymentStateExtension($this->createMock(StateMachineInterface::class)));
+                $payment = $this->redirectPayment(42, PaymentInterface::STATE_PROCESSING);
+                $before = $payment->getDetails();
+                $calls['before_fetch'] = static function () use ($payment, $before): void {
+                    self::assertSame($before, $payment->getDetails(), 'Even during fetch, the candidate must not be in the details.');
+                };
+                $persisted = [];
+                $storage = $this->createMock(StorageInterface::class);
+                $storage->method('support')->willReturnCallback(static fn ($model): bool => $model === $payment);
+                $storage->method('update')->willReturnCallback(static function (Payment $payment) use (&$persisted): void {
+                    $persisted[] = $payment->getDetails();
+                });
+                $gateway->addExtension(new StorageExtension($storage));
+                $http->query = ['pid' => 'foreign_alma'];
+                $calls['fetch_error'] = $fetchError;
+                $request = $notify ? new Notify($payment) : new GetHumanStatus($payment);
+                try {
+                    $gateway->execute($request, true);
+                    self::fail('Expected validation to reject the candidate PID.');
+                } catch (PaymentIdMismatchException | RequestError $exception) {
+                    self::assertInstanceOf($fetchError ? RequestError::class : PaymentIdMismatchException::class, $exception);
+                    self::assertSame($before, $payment->getDetails());
+                    if ($notify) {
+                        self::assertSame($before, $request->getModel()->getArrayCopy());
+                    }
+                    self::assertSame(['foreign_alma'], $calls['fetch']);
+                    self::assertSame([], $calls['refund']);
+                    self::assertSame([$before], $persisted);
+                }
+
+                $http->query = ['pid' => 'owned_alma'];
+                $calls['fetch_error'] = false;
+                $status = new GetHumanStatus($payment);
+                $reply = $gateway->execute($notify ? new Notify($payment) : $status, true);
+                if ($notify) {
+                    self::assertInstanceOf(HttpResponse::class, $reply);
+                    self::assertSame(200, $reply->getStatusCode());
+                } else {
+                    self::assertTrue($status->isCaptured());
+                }
+                self::assertSame('owned_alma', $payment->getDetails()['payment_id']);
+                self::assertTrue($payment->getDetails()['is_valid']);
+                self::assertSame(['foreign_alma', 'owned_alma'], $calls['fetch']);
+                self::assertSame([], $calls['refund']);
+            }
+        }
+    }
+
+    public function testTerminalLegacyPaymentDoesNotBindCandidatePid(): void
+    {
+        foreach ([false, true] as $notify) {
+            $calls = ['create' => [], 'fetch' => [], 'paid' => true];
+            [$gateway, $http] = $this->redirectGateway($calls);
+            $gateway->addExtension(new UpdatePaymentStateExtension($this->createMock(StateMachineInterface::class)));
+            $payment = $this->redirectPayment(42, PaymentInterface::STATE_COMPLETED);
+            $before = $payment->getDetails();
+            $http->query = ['pid' => 'some_alma'];
+
+            $gateway->execute($notify ? new Notify($payment) : new GetHumanStatus($payment), true);
+
+            self::assertSame($before, $payment->getDetails());
+            self::assertSame([], $calls['fetch']);
+            self::assertSame([], $calls['refund']);
+        }
+    }
+
+    public function testLegacyFailedStatusWithoutPidCannotRefund(): void
+    {
+        $calls = ['create' => [], 'fetch' => [], 'paid' => false];
+        [$gateway] = $this->redirectGateway($calls);
+        $payment = $this->redirectPayment(42, PaymentInterface::STATE_PROCESSING);
+        $payment->setDetails(['is_valid' => false] + $payment->getDetails());
+
+        $status = new GetHumanStatus($payment);
+        $gateway->execute($status);
+
+        self::assertTrue($status->isFailed());
+        self::assertSame(['is_valid' => false], $payment->getDetails());
+        self::assertSame([], $calls['fetch']);
+        self::assertSame([], $calls['refund']);
+    }
+
     public function testNotifyWithoutPidDoesNotValidateOrMutatePayment(): void
     {
         $details = ['payload' => []];
@@ -266,7 +359,7 @@ final class RedirectFlowTest extends TestCase
 
     public function testNotificationValidationFailureRespondsWithRetryableError(): void
     {
-        $payment = $this->payment(['payload' => []]);
+        $payment = $this->payment(['payload' => [], 'payment_id' => 'alma_fixture']);
         $notify = new Notify($payment);
         $notify->setModel(new ArrayObject($payment->getDetails()));
         $gateway = $this->createMock(GatewayInterface::class);
@@ -539,6 +632,35 @@ final class RedirectFlowTest extends TestCase
         }
     }
 
+    public function testRejectedLinkedPidCannotTriggerRefundEvenThroughNotifyStatus(): void
+    {
+        foreach ([false, true] as $notify) {
+            foreach (['foreign_alma', ['alma_1']] as $pid) {
+                $calls = ['create' => [], 'fetch' => [], 'paid' => false];
+                [$gateway, $http] = $this->redirectGateway($calls);
+                $gateway->addExtension(new UpdatePaymentStateExtension($this->createMock(StateMachineInterface::class)));
+                $payment = $this->redirectPayment(42, PaymentInterface::STATE_PROCESSING);
+                $this->captureRedirect($gateway, $payment);
+                $before = ['is_valid' => false] + $payment->getDetails();
+                $payment->setDetails($before);
+                $http->query = ['pid' => $pid];
+
+                try {
+                    $gateway->execute($notify ? new Notify($payment) : new GetHumanStatus($payment));
+                    self::fail('Expected a rejected PID to return HTTP 400.');
+                } catch (HttpResponse $reply) {
+                    self::assertSame(400, $reply->getStatusCode());
+                }
+
+                self::assertSame('{"error":true}', $reply->getContent());
+                self::assertSame(['content-type' => 'application/json'], $reply->getHeaders());
+                self::assertSame([], $calls['refund']);
+                self::assertSame([], $calls['fetch']);
+                self::assertSame($before, $payment->getDetails());
+            }
+        }
+    }
+
     public function testRemoteIdentityAmountInstallmentsExpirationAndUrlMustRemainSafe(): void
     {
         foreach ([
@@ -769,6 +891,9 @@ final class RedirectFlowTest extends TestCase
         });
         $payments->method('fetch')->willReturnCallback(static function (string $pid) use (&$calls): AlmaPayment {
             $calls['fetch'][] = $pid;
+            if (isset($calls['before_fetch'])) {
+                $calls['before_fetch']();
+            }
             if ($calls['fetch_error']) {
                 throw new RequestError('Fixture lookup unavailable');
             }
@@ -906,6 +1031,9 @@ final class RedirectFlowTest extends TestCase
             self::assertInstanceOf(ValidatePayment::class, $request);
             $payment = $request->getModel();
             $details = $payment->getDetails();
+            if (null !== $request->getCandidatePaymentId()) {
+                $details[Details::DETAILS_KEY_PAYMENT_ID] = $request->getCandidatePaymentId();
+            }
             $details[Details::DETAILS_KEY_IS_VALID] = $valid;
             $payment->setDetails($details);
         });
