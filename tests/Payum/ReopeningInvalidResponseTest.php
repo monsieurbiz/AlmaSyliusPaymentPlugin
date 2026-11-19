@@ -32,6 +32,9 @@ final class ReopeningInvalidResponseTest extends TestCase
         }
     }
 
+    /**
+     * @dataProvider responses
+     */
     #[DataProvider('responses')]
     public function testReopeningRejectsInvalidSdkResponseButKeepsRequestErrorsRetryable(
         string $uri,

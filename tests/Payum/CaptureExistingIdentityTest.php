@@ -64,6 +64,9 @@ final class CaptureExistingIdentityTest extends TestCase
         }
     }
 
+    /**
+     * @dataProvider captures
+     */
     #[DataProvider('captures')]
     public function testCaptureRefusesMissingPayloadOrFailedValidation(string $state, string $uri, array $extra): void
     {
